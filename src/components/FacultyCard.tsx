@@ -5,8 +5,8 @@ import {
   MapPin, 
   Phone, 
   Navigation, 
-  // CheckCircle, 
-  // XCircle,
+  CheckCircle, 
+  XCircle,
   // Building
 } from 'lucide-react';
 
@@ -18,7 +18,7 @@ interface Faculty {
   location_room: string;
   cabin_number: string;
   phone_number: string;
-  // availability: boolean;
+  availability: boolean;
   location_id: number;
 }
 
@@ -42,7 +42,7 @@ export const FacultyCard: React.FC<FacultyCardProps> = ({ faculty, onRouteToFacu
             <span className="text-sm">{faculty.department}</span>
           </div>
         </div>
-        {/* <div className="flex-shrink-0">
+        <div className="flex-shrink-0">
           {faculty.availability ? (
             <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
               <CheckCircle size={16} />
@@ -54,7 +54,7 @@ export const FacultyCard: React.FC<FacultyCardProps> = ({ faculty, onRouteToFacu
               Not Available
             </div>
           )}
-        </div> */}
+        </div>
       </div>
 
       {/* Faculty Details */}

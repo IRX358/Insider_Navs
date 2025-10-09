@@ -10,7 +10,7 @@ interface Faculty {
   location_room: string;
   cabin_number: string;
   phone_number: string;
-  // availability: boolean;
+  availability: boolean;
   location_id: number;
 }
 
@@ -25,7 +25,7 @@ export const FacultyManager: React.FC = () => {
     location_room: '',
     cabin_number: '',
     phone_number: '',
-    // availability: true,
+    availability: true,
   });
 
   const handleEdit = (facultyMember: Faculty) => {
@@ -37,7 +37,7 @@ export const FacultyManager: React.FC = () => {
       location_room: facultyMember.location_room,
       cabin_number: facultyMember.cabin_number,
       phone_number: facultyMember.phone_number,
-      // availability: facultyMember.availability,
+      availability: facultyMember.availability,
     });
   };
 
@@ -54,7 +54,7 @@ export const FacultyManager: React.FC = () => {
       location_room: formData.location_room.trim(),
       cabin_number: formData.cabin_number.trim(),
       phone_number: formData.phone_number.trim(),
-      // availability: formData.availability,
+      availability: formData.availability,
       location_id: 331, // Default location ID
     };
 
@@ -80,7 +80,7 @@ export const FacultyManager: React.FC = () => {
       location_room: '',
       cabin_number: '',
       phone_number: '',
-      // availability: true,
+      availability: true,
     });
   };
 
@@ -94,7 +94,7 @@ export const FacultyManager: React.FC = () => {
       location_room: '',
       cabin_number: '',
       phone_number: '',
-      // availability: true,
+      availability: true,
     });
   };
 
@@ -113,7 +113,7 @@ export const FacultyManager: React.FC = () => {
       location_room: '',
       cabin_number: '',
       phone_number: '',
-      // availability: true,
+      availability: true,
     });
   };
 
@@ -196,7 +196,7 @@ export const FacultyManager: React.FC = () => {
                 placeholder="+91-90000-00000"
               />
             </div>
-            {/* <div>
+            <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Availability</label>
               <select
                 value={formData.availability.toString()}
@@ -207,7 +207,7 @@ export const FacultyManager: React.FC = () => {
                 <option value="true">Available</option>
                 <option value="false">Not Available</option>
               </select>
-            </div> */}
+            </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-300 mb-2">Courses (comma separated)</label>
               <input
@@ -290,7 +290,7 @@ export const FacultyManager: React.FC = () => {
                              focus:neon-border bg-black/30 text-white placeholder-gray-500"
                     placeholder="Phone Number"
                   />
-                  {/* <select
+                  <select
                     value={formData.availability.toString()}
                     onChange={(e) => setFormData({ ...formData, availability: e.target.value === 'true' })}
                     className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent 
@@ -298,7 +298,7 @@ export const FacultyManager: React.FC = () => {
                   >
                     <option value="true">Available</option>
                     <option value="false">Not Available</option>
-                  </select> */}
+                  </select>
                   <div className="md:col-span-2">
                     <input
                       type="text"
@@ -352,7 +352,7 @@ export const FacultyManager: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {/* {facultyMember.availability ? (
+                    {facultyMember.availability ? (
                       <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">
                         Available
                       </span>
@@ -360,7 +360,7 @@ export const FacultyManager: React.FC = () => {
                       <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs">
                         Not Available
                       </span>
-                    )} */}
+                    )}
                     <button
                       onClick={() => handleEdit(facultyMember)}
                       className="p-2 rounded-lg glass-panel text-gray-400 hover:text-blue-400 transition-colors"

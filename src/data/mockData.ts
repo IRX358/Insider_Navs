@@ -59,7 +59,7 @@ export const mockFaculty = [
     location_room: 'C-201',
     cabin_number: 'LS-Cabin xx',
     phone_number: '+91-9600595959',
-    // availability: false,
+    availability: false,
     location_id: 601,
   },
   {
@@ -70,7 +70,7 @@ export const mockFaculty = [
     location_room: 'C-305',
     cabin_number: 'LF-WS-43',
     phone_number: '+91-7899006716',
-    // availability: true,
+    availability: true,
     location_id: 331,
   },
   {
@@ -81,7 +81,7 @@ export const mockFaculty = [
     location_room: 'A-101',
     cabin_number: 'LF-WS-39',
     phone_number: '+91-8431038360',
-    // availability: true,
+    availability: true,
     location_id: 201,
   },
   {
@@ -92,7 +92,7 @@ export const mockFaculty = [
     location_room: 'B-205',
     cabin_number: 'QF-WS-04',
     phone_number: '+91-949066612',
-    // availability: true,
+    availability: true,
     location_id: 202,
   },
   {
@@ -103,7 +103,7 @@ export const mockFaculty = [
     location_room: 'C-201',
     cabin_number: 'LF-WS-21',
     phone_number: '+91-9916677392',
-    // availability: true,
+    availability: true,
     location_id: 601,
   },
   {
@@ -114,7 +114,7 @@ export const mockFaculty = [
     location_room: 'C-201',
     cabin_number: 'LF-WS-36',
     phone_number: '+91-7382276466',
-    // availability: true,
+    availability: true,
     location_id: 601,
   },
   {
@@ -125,7 +125,7 @@ export const mockFaculty = [
     location_room: 'C-201',
     cabin_number: 'LF-WS-02',
     phone_number: '+91-9606853783',
-    // availability: false,
+    availability: false,
     location_id: 601,
   },
   

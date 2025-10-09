@@ -3,16 +3,18 @@ import { SegmentedControl } from './SegmentedControl';
 import { FindRoute } from './FindRoute';
 import { FindFaculty } from './FindFaculty';
 import { AdminPanel } from './AdminPanel';
-import { Navigation, MapPin, Settings, Code , User, Mail, Github, Linkedin,X,Bug} from 'lucide-react';
+import { FacultyPanel } from './FacultyPanel'; 
+import { Navigation, MapPin, Settings, Code , User, Mail, Github, Linkedin,X,Bug,Users, LogIn} from 'lucide-react';
 import mainLogo from '../assets/mainLogo.jpg';
 import campusMap from '../assets/cammap.jpg';
 
 export const AppShell: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin'>('route');
+  const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin' | 'facultyPanel'>('route'); 
   const [fromLocation, setFromLocation] = useState<string | null>(null);
   const [toLocation, setToLocation] = useState<string | null>(null);
   const [showCampusMap, setShowCampusMap] = useState(false);
   const [activeBg, setActiveBg] = useState('main-bg');
+
 
   useEffect(() => {
     // Check URL parameters for QR code deep linking
@@ -63,59 +65,77 @@ export const AppShell: React.FC = () => {
 
         {/* Navigation Tabs */}
         <div className="mb-8 space-y-4">
-          <SegmentedControl
-            options={[
-              { value: 'route', label: 'Find Route', icon: Navigation },
-              { value: 'faculty', label: 'Find Faculty', icon: MapPin }
-            ]}
-            value={activeTab === 'admin' ? 'route' : activeTab}
-            onChange={(value) => setActiveTab(value as 'route' | 'faculty')}
-          />
+            <SegmentedControl
+              options={[
+                { value: 'route', label: 'Find Route', icon: Navigation },
+                { value: 'faculty', label: 'Find Faculty', icon: MapPin }
+              ]}
+              // Ensure SegmentedControl is disabled when in a Panel view
+              value={activeTab === 'admin' || activeTab === 'facultyPanel' ? 'route' : activeTab}
+              onChange={(value) => setActiveTab(value as 'route' | 'faculty')}
+            />
           
           {/* Admin Access Button */}
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-3"> {/* Added gap-3 for spacing */}
+            {/* NEW Faculty Panel Button */}
+              <button
+                onClick={() => setActiveTab(activeTab === 'facultyPanel' ? 'route' : 'facultyPanel')}
+                className={`
+                  flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+                  transition-all duration-300
+                  ${activeTab === 'facultyPanel'
+                    ? 'neon-border bg-gradient-to-r from-purple-600 to-purple-500 text-white'
+                    : 'glass-panel text-gray-400 hover:text-gray-300 border border-transparent hover:border-purple-500/30'
+                  }
+                `}
+              >
+                <LogIn size={16} /> {/* Using LogIn icon for access */}
+                {activeTab === 'facultyPanel' ? 'Exit Faculty' : 'Faculty Panel'}
+              </button>
             <button
-              onClick={() => setActiveTab(activeTab === 'admin' ? 'route' : 'admin')}
-              className={`
-                flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
-                transition-all duration-300
-                ${activeTab === 'admin'
-                  ? 'neon-border bg-gradient-to-r from-purple-600 to-purple-500 text-white'
-                  : 'glass-panel text-gray-400 hover:text-gray-300 border border-transparent hover:border-purple-500/30'
-                }
-              `}
-            >
-              <Settings size={16} />
-              {activeTab === 'admin' ? 'Exit Admin' : 'Admin Panel'}
-            </button>
+                onClick={() => setActiveTab(activeTab === 'admin' ? 'route' : 'admin')}
+                className={`
+                  flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+                  transition-all duration-300
+                  ${activeTab === 'admin'
+                    ? 'neon-border bg-gradient-to-r from-purple-600 to-purple-500 text-white'
+                    : 'glass-panel text-gray-400 hover:text-gray-300 border border-transparent hover:border-purple-500/30'
+                  }
+                `}
+              >
+                <Settings size={16} />
+                {activeTab === 'admin' ? 'Exit Admin' : 'Admin Panel'}
+              </button>
           </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="space-y-6">
-          {activeTab === 'route' && (
-            <FindRoute 
-              initialFrom={fromLocation} 
-              initialTo={toLocation}
-              onLocationChange={(from, to) => {
-                setFromLocation(from);
-                setToLocation(to);
-              }}
-            />
-          )}
-          {activeTab === 'faculty' && (
-            <FindFaculty onRouteToFaculty={(locationId, locationName) => {
-              setToLocation(locationId);
-              setActiveTab('route');
-            }} />
-          )}
-          {activeTab === 'admin' && (
-            <AdminPanel />
-          )}
+  {/* Tab Content (Conditional Rendering) */}
+          <div className="space-y-6">
+            {activeTab === 'route' && (
+              <FindRoute 
+                initialFrom={fromLocation} 
+                initialTo={toLocation}
+                onLocationChange={(from, to) => {
+                  setFromLocation(from);
+                  setToLocation(to);
+                }}
+              />
+            )}
+            {activeTab === 'faculty' && (
+              <FindFaculty onRouteToFaculty={(locationId, locationName) => {
+                setToLocation(locationId);
+                setActiveTab('route');
+              }} />
+            )}
+            {activeTab === 'admin' && (
+              <AdminPanel />
+            )}
+            {activeTab === 'facultyPanel' && ( 
+              <FacultyPanel />
+            )}
+          </div>
         </div>
-      </div>
-
-    )}
+      )}
       {/* footer Content */}
       <footer className="relative z-10 py-12 px-6 glass-panel rounded-t-2xl border-t border-purple-500/30">
   <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center">
