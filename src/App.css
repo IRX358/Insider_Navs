@@ -1,0 +1,140 @@
+:root {
+  --bg: #0b0b0d;
+  --panel: #0f1113;
+  --accent: #8b3cff;
+  /* --accent: #2ecc71; */
+  --accent2: #5a2bd6;
+  /* --accent2: #27ae60; */
+  --muted: #9aa0a6;
+  --success: #27ae60;
+  --danger: #e74c3c;
+  --text: #ffffff;
+  --text-muted: #b0b0b0;
+  --border: #1a1a1c;
+}
+
+* {
+  box-sizing: border-box;
+}
+.electrolize-regular {
+  font-family: "Electrolize", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+.main-bg::before,
+.admin-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom right;
+  opacity: 0.2;
+  filter: brightness(0) invert(1);
+}
+
+@media (max-width: 768px) {
+  .main-bg::before,
+  .admin-bg::before {
+    background-size: 150% auto; /* Make the background larger on mobile */
+    background-position: bottom -50px right -50px; /* Shift it slightly off-screen */
+  }
+}
+.neon-glow {
+  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 30px var(--accent);
+}
+
+.neon-border {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 10px rgba(139, 60, 255, 0.3);
+}
+
+.neon-border:hover,
+.neon-border:focus {
+  box-shadow: 0 0 15px rgba(139, 60, 255, 0.5), 0 0 25px rgba(139, 60, 255, 0.3);
+}
+
+.glass-panel {
+  background: rgba(15, 17, 19, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-panel {
+  background: rgba(17, 24, 39, 0.98);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(139, 60, 255, 0.3);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.5),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(139, 60, 255, 0.1);
+}
+
+@keyframes pulse-neon {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent), 0 0 15px var(--accent);
+  }
+  50% {
+    box-shadow: 0 0 8px var(--accent), 0 0 15px var(--accent), 0 0 25px var(--accent);
+  }
+}
+
+.animate-pulse-neon {
+  animation: pulse-neon 2s ease-in-out infinite;
+}
+
+/* Ensure dropdowns are always on top */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  background: transparent;
+}
+
+/* Loading states */
+.loading-spinner {
+  border: 2px solid rgba(139, 60, 255, 0.3);
+  border-top: 2px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .glass-panel {
+    margin: 0 4px;
+  }
+  
+  .neon-border {
+    box-shadow: 0 0 5px rgba(139, 60, 255, 0.3);
+  }
+  
+  .neon-border:hover,
+  .neon-border:focus {
+    box-shadow: 0 0 8px rgba(139, 60, 255, 0.5);
+  }
+}
