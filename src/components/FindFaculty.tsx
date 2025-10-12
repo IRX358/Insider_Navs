@@ -9,8 +9,8 @@ interface FindFacultyProps {
 
 export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) => {
   const [selectedFaculty, setSelectedFaculty] = useState('');
-  const [selectedRole, setSelectedRole] = useState('');
-  const [selectedDesignation, setSelectedDesignation] = useState('');
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [selectedDesignation, setSelectedDesignation] = useState<string | null>(null);
 
   const facultyOptions = mockFaculty.map(faculty => ({
     id: faculty.id.toString(),
@@ -36,16 +36,18 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
     { id: 'Lecturer', label: 'Lecturer', subtitle: '', type: 'faculty' as const},
   ]
 
-  const filteredFaculty = mockFaculty.filter(faculty => {
-    return (
-      (selectedRole ? faculty.role === selectedRole : true) &&
-      (selectedDesignation ? faculty.designation === selectedDesignation : true)
-    );
-  });
-
   const selectedFacultyData = mockFaculty.find(
     faculty => faculty.id.toString() === selectedFaculty
   );
+  
+  // Filter logic updated
+  const filteredFaculty = (selectedRole !== null || selectedDesignation !== null) 
+    ? mockFaculty.filter(faculty => {
+        const roleMatch = selectedRole ? faculty.role === selectedRole : true;
+        const designationMatch = selectedDesignation ? faculty.designation === selectedDesignation : true;
+        return roleMatch && designationMatch;
+      })
+    : [];
 
   return (
     <div 
@@ -55,41 +57,69 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
       aria-labelledby="faculty-tab"
     >
       <SearchableDropdown
-        label="Search Faculty"
+        label="Search Faculty by Name"
         options={facultyOptions}
         value={selectedFaculty}
-        onChange={(value) => setSelectedFaculty(value)}
+        onChange={(value) => {
+            setSelectedFaculty(value);
+            // Clear filters when searching for a specific person
+            setSelectedRole(null);
+            setSelectedDesignation(null);
+        }}
         placeholder="Type faculty name or department..."
       />
 
       <div className="flex gap-4">
-        <SearchableDropdown
-            label="Role"
-            options={roleOptions}
-            value={selectedRole}
-            onChange={setSelectedRole}
-            placeholder="Filter by role..."
-        />
-        <SearchableDropdown
-            label="Designation"
-            options={designationOptions}
-            value={selectedDesignation}
-            onChange={setSelectedDesignation}
-            placeholder="Filter by designation..."
-        />
+        {/* Each dropdown is wrapped in a div to control its width */}
+        <div className="w-1/2">
+            <SearchableDropdown
+                label="Role"
+                options={roleOptions}
+                value={selectedRole ?? ''}
+                onChange={(value) => {
+                    setSelectedRole(value);
+                    setSelectedFaculty(''); // Clear specific search
+                }}
+                placeholder="Filter by role..."
+            />
+        </div>
+        <div className="w-1/2">
+            <SearchableDropdown
+                label="Designation"
+                options={designationOptions}
+                value={selectedDesignation ?? ''}
+                onChange={(value) => {
+                    setSelectedDesignation(value)
+                    setSelectedFaculty(''); // Clear specific search
+                }}
+                placeholder="Filter by designation..."
+            />
+        </div>
       </div>
 
-
-      {filteredFaculty.map(faculty => (
+      {/* Conditional Rendering Logic */}
+      {selectedFacultyData ? (
+        // If a specific faculty is selected, show only their card
         <FacultyCard
-          key={faculty.id}
-          faculty={faculty}
-          onRouteToFaculty={() => onRouteToFaculty(
-            faculty.location_id.toString(),
-            faculty.cabin_number
-          )}
+            faculty={selectedFacultyData}
+            onRouteToFaculty={() => onRouteToFaculty(
+            selectedFacultyData.location_id.toString(),
+            selectedFacultyData.cabin_number
+            )}
         />
-      ))}
+      ) : (
+        // Otherwise, show the list based on filters
+        filteredFaculty.map(faculty => (
+          <FacultyCard
+            key={faculty.id}
+            faculty={faculty}
+            onRouteToFaculty={() => onRouteToFaculty(
+              faculty.location_id.toString(),
+              faculty.cabin_number
+            )}
+          />
+        ))
+      )}
     </div>
   );
 };
