@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { LogOut, User, CheckCircle, XCircle, Edit, Save, Phone, MapPin, GraduationCap, X, AlertCircle } from 'lucide-react';
 import { mockFaculty } from '../data/mockData';
@@ -7,8 +6,9 @@ interface Faculty {
   id: number;
   name: string;
   department: string;
+  designation: string;
+  role: string;
   courses_taken: string[];
-  location_room: string;
   cabin_number: string;
   phone_number: string;
   availability: boolean;
@@ -34,14 +34,15 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
   const [formData, setFormData] = useState({
     name: currentFaculty?.name || '',
     department: currentFaculty?.department || '',
-    location_room: currentFaculty?.location_room || '',
+    designation: currentFaculty?.designation || '',
+    role: currentFaculty?.role || '',
     cabin_number: currentFaculty?.cabin_number || '',
     phone_number: currentFaculty?.phone_number || '',
     courses_taken: currentFaculty?.courses_taken.join(', ') || '',
   });
 
   if (!currentFaculty) {
-    // ... (Error return unchanged)
+    return <div>Error: Faculty not found.</div>
   }
 
   // --- PRIMARY FUNCTION: AVAILABILITY TOGGLE ---
@@ -74,7 +75,8 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
     setFormData({
         name: currentFaculty.name,
         department: currentFaculty.department,
-        location_room: currentFaculty.location_room,
+        designation: currentFaculty.designation,
+        role: currentFaculty.role,
         cabin_number: currentFaculty.cabin_number,
         phone_number: currentFaculty.phone_number,
         courses_taken: currentFaculty.courses_taken.join(', '),
@@ -87,8 +89,8 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
   };
 
   const handleSaveProfile = () => {
-    if (!formData.name.trim() || !formData.department.trim() || !formData.location_room.trim()) {
-      alert('Name, Department, and Location Room are required.');
+    if (!formData.name.trim() || !formData.department.trim()) {
+      alert('Name and Department are required.');
       return;
     }
 
@@ -99,7 +101,8 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
         ...currentFaculty, 
         name: formData.name.trim(),
         department: formData.department.trim(),
-        location_room: formData.location_room.trim(),
+        designation: formData.designation.trim(),
+        role: formData.role.trim(),
         cabin_number: formData.cabin_number.trim(),
         phone_number: formData.phone_number.trim(),
         courses_taken: formData.courses_taken.split(',').map(c => c.trim()).filter(c => c),
@@ -117,7 +120,7 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
     }, 1000);
   };
   
-  const { name, department, location_room, cabin_number, phone_number, courses_taken, availability } = currentFaculty;
+  const { name, department, designation, role, cabin_number, phone_number, courses_taken, availability } = currentFaculty;
 
   // --- UI RENDERING ---
   return (
@@ -125,7 +128,19 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
       {/* Header (unchanged) */}
       <div className="glass-panel rounded-2xl p-6">
         <div className="flex items-center justify-between">
-          {/* ... (Profile info & Logout) ... */}
+            <div>
+                <h2 className="text-xl font-bold text-white">Faculty Dashboard</h2>
+                <p className="text-gray-400 text-sm">Welcome, {name}</p>
+            </div>
+            <button
+                onClick={onLogout}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+                    glass-panel text-gray-400 hover:text-gray-300 border border-transparent 
+                    hover:border-red-500/30 transition-all duration-300"
+            >
+                <LogOut size={16} />
+                Logout
+            </button>
         </div>
       </div>
 
@@ -200,11 +215,18 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
             onChange={(e) => setFormData({ ...formData, department: e.target.value })}
             isEditing={isEditing}
           />
-          {/* Location Room */}
-          <InputField 
-            label="Location Room" 
-            value={isEditing ? formData.location_room : location_room}
-            onChange={(e) => setFormData({ ...formData, location_room: e.target.value })}
+           {/* Designation */}
+           <InputField 
+            label="Designation" 
+            value={isEditing ? formData.designation : designation}
+            onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+            isEditing={isEditing}
+          />
+           {/* Role */}
+           <InputField 
+            label="Role" 
+            value={isEditing ? formData.role : role}
+            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             isEditing={isEditing}
           />
           {/* Cabin Number */}

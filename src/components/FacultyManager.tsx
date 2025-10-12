@@ -6,8 +6,9 @@ interface Faculty {
   id: number;
   name: string;
   department: string;
+  designation: string;
+  role: string;
   courses_taken: string[];
-  location_room: string;
   cabin_number: string;
   phone_number: string;
   availability: boolean;
@@ -21,8 +22,9 @@ export const FacultyManager: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     department: '',
+    designation: '',
+    role: '',
     courses_taken: '',
-    location_room: '',
     cabin_number: '',
     phone_number: '',
     availability: true,
@@ -33,8 +35,9 @@ export const FacultyManager: React.FC = () => {
     setFormData({
       name: facultyMember.name,
       department: facultyMember.department,
+      designation: facultyMember.designation,
+      role: facultyMember.role,
       courses_taken: facultyMember.courses_taken.join(', '),
-      location_room: facultyMember.location_room,
       cabin_number: facultyMember.cabin_number,
       phone_number: facultyMember.phone_number,
       availability: facultyMember.availability,
@@ -42,16 +45,17 @@ export const FacultyManager: React.FC = () => {
   };
 
   const handleSave = () => {
-    if (!formData.name.trim() || !formData.department.trim() || !formData.location_room.trim()) {
-      alert('Please fill in all required fields (Name, Department, Location Room)');
+    if (!formData.name.trim() || !formData.department.trim()) {
+      alert('Please fill in all required fields (Name, Department)');
       return;
     }
 
     const facultyData = {
       name: formData.name.trim(),
       department: formData.department.trim(),
+      designation: formData.designation.trim(),
+      role: formData.role.trim(),
       courses_taken: formData.courses_taken.split(',').map(c => c.trim()).filter(c => c),
-      location_room: formData.location_room.trim(),
       cabin_number: formData.cabin_number.trim(),
       phone_number: formData.phone_number.trim(),
       availability: formData.availability,
@@ -74,13 +78,14 @@ export const FacultyManager: React.FC = () => {
       setEditingId(null);
     }
     setFormData({
-      name: '',
-      department: '',
-      courses_taken: '',
-      location_room: '',
-      cabin_number: '',
-      phone_number: '',
-      availability: true,
+        name: '',
+        department: '',
+        designation: '',
+        role: '',
+        courses_taken: '',
+        cabin_number: '',
+        phone_number: '',
+        availability: true,
     });
   };
 
@@ -88,13 +93,14 @@ export const FacultyManager: React.FC = () => {
     setEditingId(null);
     setIsAdding(false);
     setFormData({
-      name: '',
-      department: '',
-      courses_taken: '',
-      location_room: '',
-      cabin_number: '',
-      phone_number: '',
-      availability: true,
+        name: '',
+        department: '',
+        designation: '',
+        role: '',
+        courses_taken: '',
+        cabin_number: '',
+        phone_number: '',
+        availability: true,
     });
   };
 
@@ -107,13 +113,14 @@ export const FacultyManager: React.FC = () => {
   const startAdding = () => {
     setIsAdding(true);
     setFormData({
-      name: '',
-      department: '',
-      courses_taken: '',
-      location_room: '',
-      cabin_number: '',
-      phone_number: '',
-      availability: true,
+        name: '',
+        department: '',
+        designation: '',
+        role: '',
+        courses_taken: '',
+        cabin_number: '',
+        phone_number: '',
+        availability: true,
     });
   };
 
@@ -164,14 +171,25 @@ export const FacultyManager: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Location Room</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Designation</label>
               <input
                 type="text"
-                value={formData.location_room}
-                onChange={(e) => setFormData({ ...formData, location_room: e.target.value })}
+                value={formData.designation}
+                onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                 className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent 
                          focus:neon-border bg-black/30 text-white placeholder-gray-500"
-                placeholder="A-101"
+                placeholder="Professor"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Role</label>
+              <input
+                type="text"
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent 
+                         focus:neon-border bg-black/30 text-white placeholder-gray-500"
+                placeholder="HOD"
               />
             </div>
             <div>
@@ -268,11 +286,19 @@ export const FacultyManager: React.FC = () => {
                   />
                   <input
                     type="text"
-                    value={formData.location_room}
-                    onChange={(e) => setFormData({ ...formData, location_room: e.target.value })}
+                    value={formData.designation}
+                    onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
                     className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent 
                              focus:neon-border bg-black/30 text-white placeholder-gray-500"
-                    placeholder="Location Room"
+                    placeholder="Designation"
+                  />
+                  <input
+                    type="text"
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                    className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent 
+                             focus:neon-border bg-black/30 text-white placeholder-gray-500"
+                    placeholder="Role"
                   />
                   <input
                     type="text"
@@ -342,7 +368,7 @@ export const FacultyManager: React.FC = () => {
                       <div className="flex items-center gap-4 mt-2 text-sm">
                         <div className="flex items-center gap-1">
                           <MapPin size={14} className="text-gray-400" />
-                          <span className="text-gray-300">{facultyMember.location_room}</span>
+                          <span className="text-gray-300">{facultyMember.cabin_number}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Phone size={14} className="text-gray-400" />
@@ -354,11 +380,11 @@ export const FacultyManager: React.FC = () => {
                   <div className="flex items-center gap-2">
                     {facultyMember.availability ? (
                       <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">
-                        Available
+                        AvA
                       </span>
                     ) : (
                       <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs">
-                        Not Available
+                        NA
                       </span>
                     )}
                     <button

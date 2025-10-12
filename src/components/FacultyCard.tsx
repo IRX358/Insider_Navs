@@ -7,6 +7,8 @@ import {
   Navigation, 
   CheckCircle, 
   XCircle,
+  Briefcase,
+  Award
   // Building
 } from 'lucide-react';
 
@@ -14,8 +16,9 @@ interface Faculty {
   id: number;
   name: string;
   department: string;
+  designation: string;
+  role: string;
   courses_taken: string[];
-  location_room: string;
   cabin_number: string;
   phone_number: string;
   availability: boolean;
@@ -41,17 +44,25 @@ export const FacultyCard: React.FC<FacultyCardProps> = ({ faculty, onRouteToFacu
             <GraduationCap size={16} />
             <span className="text-sm">{faculty.department}</span>
           </div>
+          <div className="flex items-center gap-2 text-gray-400">
+            <Briefcase size={16} />
+            <span className="text-sm">{faculty.designation}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-400">
+            <Award size={16} />
+            <span className="text-sm">{faculty.role}</span>
+          </div>
         </div>
         <div className="flex-shrink-0">
           {faculty.availability ? (
             <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
               <CheckCircle size={16} />
-              Available
+              AvA
             </div>
           ) : (
             <div className="flex items-center gap-2 px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm">
               <XCircle size={16} />
-              Not Available
+              NA
             </div>
           )}
         </div>
@@ -84,7 +95,6 @@ export const FacultyCard: React.FC<FacultyCardProps> = ({ faculty, onRouteToFacu
             <span className="text-sm font-medium">Location</span>
           </div>
           <div className="space-y-1 text-sm text-gray-400">
-            <div>Room: <span className="text-white">{faculty.location_room}</span></div>
             <div>Cabin: <span className="text-white">{faculty.cabin_number}</span></div>
           </div>
         </div>
@@ -106,20 +116,6 @@ export const FacultyCard: React.FC<FacultyCardProps> = ({ faculty, onRouteToFacu
 
       {/* Route Button */}
       <div className="pt-4 border-t border-gray-700">
-        {/* <button
-          onClick={onRouteToFaculty}
-          disabled={!faculty.availability}
-          className="w-full py-4 px-6 rounded-2xl font-medium text-white
-                   transition-all duration-300 flex items-center justify-center gap-3
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   ${faculty.availability 
-                     ? 'neon-border bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400' 
-                     : 'bg-gray-700 border border-gray-600'
-                   }"
-        >
-          <Navigation size={20} />
-          {faculty.availability ? 'Get Route to Faculty' : 'Faculty Not Available'}
-        </button> */}
         <button
           onClick={onRouteToFaculty}
           className="w-full py-4 px-6 rounded-2xl font-medium text-white
