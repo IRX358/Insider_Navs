@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LocationManager } from './LocationManager';
 import { FacultyManager } from './FacultyManager';
+import { Dashboard } from './Dashboard';
 import { LogOut, MapPin, Users, BarChart3 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -72,11 +73,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {activeSection === 'locations' && <LocationManager />}
         {activeSection === 'faculty' && <FacultyManager />}
         {activeSection === 'analytics' && (
-          <div className="glass-panel rounded-2xl p-8 text-center">
-            <BarChart3 size={48} className="mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-semibold text-white mb-2">Analytics</h3>
-            <p className="text-gray-400">Analytics dashboard coming soon...</p>
-          </div>
+          <Dashboard />
         )}
       </div>
     </div>

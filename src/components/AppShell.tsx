@@ -3,13 +3,14 @@ import { SegmentedControl } from './SegmentedControl';
 import { FindRoute } from './FindRoute';
 import { FindFaculty } from './FindFaculty';
 import { AdminPanel } from './AdminPanel';
-import { FacultyPanel } from './FacultyPanel'; 
+import { FacultyPanel } from './FacultyPanel';
+import { Dashboard } from './Dashboard';
 import { Navigation, MapPin, Settings, Code , User, Mail, Github, Linkedin,X,Bug,Users, LogIn} from 'lucide-react';
 import mainLogo from '../assets/mainLogo.jpg';
 import campusMap from '../assets/cammap.jpg';
 
 export const AppShell: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin' | 'facultyPanel'>('route'); 
+  const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin' | 'facultyPanel'>('route');
   const [fromLocation, setFromLocation] = useState<string | null>(null);
   const [toLocation, setToLocation] = useState<string | null>(null);
   const [showCampusMap, setShowCampusMap] = useState(false);
@@ -112,14 +113,17 @@ export const AppShell: React.FC = () => {
   {/* Tab Content (Conditional Rendering) */}
           <div className="space-y-6">
             {activeTab === 'route' && (
-              <FindRoute 
-                initialFrom={fromLocation} 
-                initialTo={toLocation}
-                onLocationChange={(from, to) => {
-                  setFromLocation(from);
-                  setToLocation(to);
-                }}
-              />
+              <>
+                <FindRoute 
+                  initialFrom={fromLocation} 
+                  initialTo={toLocation}
+                  onLocationChange={(from, to) => {
+                    setFromLocation(from);
+                    setToLocation(to);
+                  }}
+                />
+                <Dashboard />
+              </>
             )}
             {activeTab === 'faculty' && (
               <FindFaculty onRouteToFaculty={(locationId, locationName) => {
