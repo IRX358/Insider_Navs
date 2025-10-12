@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { LocationManager } from './LocationManager';
 import { FacultyManager } from './FacultyManager';
 import { Dashboard } from './Dashboard';
-import { LogOut, MapPin, Users, BarChart3 } from 'lucide-react';
+import { FlashNewsManager } from './FlashNewsManager'; // Import the new component
+import { LogOut, MapPin, Users, BarChart3, Bell } from 'lucide-react'; // Import Bell icon
 
 interface AdminDashboardProps {
   currentUser: string;
@@ -13,7 +14,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   currentUser, 
   onLogout 
 }) => {
-  const [activeSection, setActiveSection] = useState<'locations' | 'faculty' | 'analytics'>('locations');
+  const [activeSection, setActiveSection] = useState<'locations' | 'faculty' | 'analytics' | 'news'>('locations');
 
   return (
     <div className="space-y-6">
@@ -38,11 +39,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Navigation */}
       <div className="glass-panel rounded-2xl p-1">
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-4 gap-1"> {/* Update grid to 4 columns */}
           {[
             { id: 'locations', label: 'Locations', icon: MapPin },
             { id: 'faculty', label: 'Faculty', icon: Users },
             { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+            { id: 'news', label: 'News', icon: Bell }, // Add News tab
           ].map((section) => {
             const Icon = section.icon;
             const isActive = activeSection === section.id;
@@ -72,9 +74,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <div>
         {activeSection === 'locations' && <LocationManager />}
         {activeSection === 'faculty' && <FacultyManager />}
-        {activeSection === 'analytics' && (
-          <Dashboard />
-        )}
+        {activeSection === 'analytics' && <Dashboard />}
+        {activeSection === 'news' && <FlashNewsManager />} {/* Render the news manager */}
       </div>
     </div>
   );

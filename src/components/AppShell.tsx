@@ -5,6 +5,7 @@ import { FindFaculty } from './FindFaculty';
 import { AdminPanel } from './AdminPanel';
 import { FacultyPanel } from './FacultyPanel';
 import { Dashboard } from './Dashboard';
+import { FlashNewsTicker } from './FlashNewsTicker'; // Import the ticker
 import { Navigation, MapPin, Settings, Code , User, Mail, Github, Linkedin,X,Bug,Users, LogIn} from 'lucide-react';
 import mainLogo from '../assets/mainLogo.jpg';
 import campusMap from '../assets/cammap.jpg';
@@ -63,6 +64,9 @@ export const AppShell: React.FC = () => {
           
           </div>
         </div>
+
+        {/* Flash News Ticker */}
+        <FlashNewsTicker />
 
         {/* Navigation Tabs */}
         <div className="mb-8 space-y-4">
