@@ -11,7 +11,8 @@ import mainLogo from '../assets/mainLogo.jpg';
 import campusMap from '../assets/cammap.jpg';
 
 export const AppShell: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin' | 'facultyPanel'>('route'); 
+  const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin' | 'facultyPanel'>('route');
+  // const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin' | 'facultyPanel'>('faculty');  //Default tab selection
   const [fromLocation, setFromLocation] = useState<string | null>(null);
   const [toLocation, setToLocation] = useState<string | null>(null);
   const [showCampusMap, setShowCampusMap] = useState(false);

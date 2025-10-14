@@ -52,9 +52,10 @@ export const mockLocations = [
 
 export const mockFaculty = [
   {
-    id: 7,
+    id: 1,
     name: 'Dr.Pravitha Raja',
     department: 'CSE',
+    school: 'SOCSE',
     designation: 'Professor',
     role: 'HOD',
     courses_taken: ['Data Structures'],
@@ -64,9 +65,10 @@ export const mockFaculty = [
     location_id: 601,
   },
   {
-    id: 1,
+    id: 2,
     name: 'Ms. Asrhiya Lubna',
     department: 'CSE',
+    school: 'SOCSE',
     designation: 'Lecturer',
     role: 'Academic Coordinator',
     courses_taken: ['Exploratory Data Analysis', 'Machine Learning'],
@@ -76,9 +78,10 @@ export const mockFaculty = [
     location_id: 331,
   },
   {
-    id: 2,
+    id: 3,
     name: 'Dr Vignesh R',
     department: 'CSE',
+    school: 'SOCSE',
     designation: 'Professor',
     role: 'CC',
     courses_taken: ['Data Science for Machine Learning'],
@@ -88,9 +91,10 @@ export const mockFaculty = [
     location_id: 201,
   },
   {
-    id: 3,
+    id: 4,
     name: 'Mr. Chandrashekar B',
     department: 'CSE',
+    school: 'SOCSE',
     designation: 'Assistant Professor',
     role: 'Reviewer',
     courses_taken: ['Internship coordinator for CSD', 'Statistical foundation for Data Science'],
@@ -100,9 +104,10 @@ export const mockFaculty = [
     location_id: 202,
   },
   {
-    id: 4,
+    id: 5,
     name: 'Dr Ayesha Taranum',
     department: 'CSE',
+    school: 'SOCSE',
     designation: 'Assistant Professor',
     role: 'CC',
     courses_taken: ['Data Visualization and Dashboards'],
@@ -112,9 +117,10 @@ export const mockFaculty = [
     location_id: 601,
   },
   {
-    id: 5,
+    id: 6,
     name: 'Ms. Thabassum Khan',
     department: 'CSE',
+    school: 'SOCSE',
     designation: 'Lecturer',
     role: 'NA',
     courses_taken: ['Data Mining'],
@@ -124,9 +130,10 @@ export const mockFaculty = [
     location_id: 601,
   },
   {
-    id: 6,
+    id: 7,
     name: 'Ms. Shweta SP',
     department: 'CSE',
+    school: 'SOCSE',
     designation: 'Lecturer',
     role: 'NA',
     courses_taken: ['Intro to Data Science','Reinforcement Learning'],

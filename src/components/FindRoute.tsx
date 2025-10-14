@@ -53,14 +53,6 @@ export const FindRoute: React.FC<FindRouteProps> = ({
     }, 1000);
   };
 
-  // const handlePreferenceChange = (value: string) => {
-  //   setPreferences(value);
-  //   // Clear route result when preferences change to show updated route
-  //   if (routeResult) {
-  //     setRouteResult(null);
-  //   }
-  // };
-
   const handleSwapLocations = () => {
     const temp = fromLocation;
     setFromLocation(toLocation);
