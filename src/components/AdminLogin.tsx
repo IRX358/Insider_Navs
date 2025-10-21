@@ -1,39 +1,48 @@
 import React, { useState } from 'react';
 import { Lock, User, AlertCircle } from 'lucide-react';
-import { adminCredentials } from '../data/adminCredentials';
 
 interface AdminLoginProps {
   onLogin: (username: string) => void;
 }
-
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    // Simulate authentication delay
-    setTimeout(() => {
-      const admin = adminCredentials.find(
-        admin => admin.username === username && admin.password === password
-      );
+    try {
+      const response = await fetch('http://localhost:8000/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }), 
+      });
 
-      if (admin) {
-        onLogin(username);
+      const data = await response.json(); 
+
+      if (response.ok && data.success) {
+        onLogin(data.username); // Call the onLogin prop passed from AdminPanel
       } else {
-        setError('Invalid username or password');
+        setError(data.message || 'Login failed. Please try again.');
       }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Could not connect to the server. Please check if it is running.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-8 space-y-6">
+     <div className="glass-panel rounded-2xl p-8 space-y-6">
+      {/* ... header ... */}
       <div className="text-center">
         <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 neon-glow">
           <Lock size={32} className="text-white" />
@@ -43,6 +52,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* ... username input ... */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             <User size={16} className="inline mr-2" />
@@ -52,19 +62,14 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && password) {
-                handleSubmit(e);
-              }
-            }}
-            className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent 
-                     focus:neon-border bg-black/30 text-white placeholder-gray-500 
+            className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent
+                     focus:neon-border bg-black/30 text-white placeholder-gray-500
                      transition-all duration-300"
             placeholder="Enter username"
             required
           />
         </div>
-
+        {/* ... password input ... */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             <Lock size={16} className="inline mr-2" />
@@ -74,19 +79,15 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && username) {
-                handleSubmit(e);
-              }
-            }}
-            className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent 
-                     focus:neon-border bg-black/30 text-white placeholder-gray-500 
+            className="w-full px-4 py-3 glass-panel rounded-xl border-2 border-transparent
+                     focus:neon-border bg-black/30 text-white placeholder-gray-500
                      transition-all duration-300"
             placeholder="Enter password"
             required
           />
         </div>
 
+        {/* ... error display ... */}
         {error && (
           <div className="flex items-center gap-2 p-3 bg-red-500/20 text-red-400 rounded-xl text-sm">
             <AlertCircle size={16} />
@@ -94,10 +95,11 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
           </div>
         )}
 
+        {/* ... submit button ... */}
         <button
           type="submit"
           disabled={isLoading || !username || !password}
-          className={`
+           className={`
             w-full py-4 px-6 rounded-2xl font-medium text-white
             transition-all duration-300 flex items-center justify-center gap-3
             ${(isLoading || !username || !password)
@@ -114,10 +116,10 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
           {isLoading ? 'Authenticating...' : 'Login'}
         </button>
       </form>
-
+      {/* ... footer ... */}
       <div className="text-center pt-4 border-t border-gray-700">
         <p className="text-xs text-gray-500">
-          Contact IR if u need admin credentials
+          Only CoreTeam gets admin access... Contact IR
         </p>
       </div>
     </div>

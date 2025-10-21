@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { SearchableDropdown } from './SearchableDropdown';
 import { RouteSteps } from './RouteSteps';
-import { Navigation, MapPin } from 'lucide-react'; //import an icon callled 'Settings' for the route preference segment icon 
-import { mockLocations, mockRoute } from '../data/mockData';
+import { Navigation, MapPin } from 'lucide-react';
+import { mockRoute } from '../data/mockData'; 
+
+interface Location {
+  id: string;
+  label: string;
+  subtitle: string;
+  type: 'location' | 'faculty'; 
+}
 
 interface FindRouteProps {
   initialFrom?: string | null;
@@ -17,9 +24,47 @@ export const FindRoute: React.FC<FindRouteProps> = ({
 }) => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
-  // const [preferences, setPreferences] = useState<string>('normal');
   const [routeResult, setRouteResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // 2. Add state for locations
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+
+  // 3. Fetch locations on component mount
+  useEffect(() => {
+    fetch('http://localhost:8000/api/locations')
+      .then(res => res.json())
+      .then((data: Location[]) => {
+        const formattedLocations = data.map(loc => ({ ...loc, type: 'location' as const }));
+        setLocations(formattedLocations);
+        setIsLoadingLocations(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch locations:", err);
+        setIsLoadingLocations(false);
+      });
+  }, []);
+
+  const handleGetRoute = async () => {
+    if (!fromLocation || !toLocation) return;
+    if (fromLocation === toLocation) {
+      alert('Please select different locations for "From" and "To"');
+      return;
+    }
+    setIsLoading(true);
+    setTimeout(() => {
+      setRouteResult(mockRoute);
+      setIsLoading(false);
+    }, 1000);
+  };
+  
+  const handleSwapLocations = () => {
+    const temp = fromLocation;
+    setFromLocation(toLocation);
+    setToLocation(temp);
+    setRouteResult(null); 
+  };
 
   useEffect(() => {
     if (initialFrom) {
@@ -36,29 +81,6 @@ export const FindRoute: React.FC<FindRouteProps> = ({
     }
   }, [fromLocation, toLocation, onLocationChange]);
 
-  const handleGetRoute = async () => {
-    if (!fromLocation || !toLocation) return;
-    
-    if (fromLocation === toLocation) {
-      alert('Please select different locations for "From" and "To"');
-      return;
-    }
-
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setRouteResult(mockRoute);
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  const handleSwapLocations = () => {
-    const temp = fromLocation;
-    setFromLocation(toLocation);
-    setToLocation(temp);
-    setRouteResult(null); // Clear existing route
-  };
 
   return (
     <div 
@@ -70,10 +92,10 @@ export const FindRoute: React.FC<FindRouteProps> = ({
       {/* From Location */}
       <SearchableDropdown
         label="From"
-        options={mockLocations}
+        options={locations} // 4. Use state variable
         value={fromLocation}
         onChange={(value) => setFromLocation(value)}
-        placeholder="Select starting location..."
+        placeholder={isLoadingLocations ? "Loading locations..." : "Select starting location..."}
       />
 
       {/* Swap Button */}
@@ -95,45 +117,13 @@ export const FindRoute: React.FC<FindRouteProps> = ({
       {/* To Location */}
       <SearchableDropdown
         label="To"
-        options={mockLocations}
+        options={locations} // 5. Use state variable
         value={toLocation}
         onChange={(value) => setToLocation(value)}
-        placeholder="Select destination..."
+        placeholder={isLoadingLocations ? "Loading locations..." : "Select destination..."}
       />
 
-      {/* Preferences */}
-      {/* <div>
-        <label className="block text-sm font-medium text-gray-300 mb-3">
-          <Settings size={16} className="inline mr-2" />
-          Route Preferences
-        </label>
-        <div className="space-y-2">
-          {[
-            { value: 'normal', label: 'Normal Route' },
-            { value: 'avoid_stairs', label: 'Avoid Stairs' },
-            { value: 'prefer_elevator', label: 'Prefer Elevator' },
-            { value: 'prefer_stairs', label: 'Prefer Stairs' },
-          ].map((option) => (
-            <label
-              key={option.value}
-              className="flex items-center glass-panel rounded-lg p-3 cursor-pointer hover:border-purple-500/30 border border-transparent transition-colors"
-            >
-              <input
-                type="radio"
-                name="preferences"
-                value={option.value}
-                checked={preferences === option.value}
-                onChange={(e) => handlePreferenceChange(e.target.value)}
-                className="mr-3 accent-purple-500"
-              />
-              <span className="text-gray-300">{option.label}</span>
-            </label>
-          ))}
-        </div>
-      </div> */}
-
-      {/* Get Route Button */}
-      <button
+       <button
         onClick={handleGetRoute}
         disabled={!fromLocation || !toLocation || isLoading}
         className={`
@@ -153,7 +143,6 @@ export const FindRoute: React.FC<FindRouteProps> = ({
         {isLoading ? 'Finding Route...' : 'Get Route'}
       </button>
 
-      {/* Route Results */}
       {routeResult && (
         <RouteSteps route={routeResult} />
       )}

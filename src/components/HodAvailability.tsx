@@ -1,9 +1,30 @@
 import React from 'react';
-import { mockFaculty } from '../data/mockData';
 import './HodAvailability.css';
 
-export const HodAvailability: React.FC = () => {
-  const hods = mockFaculty.filter(faculty => faculty.role === 'HOD');
+// 1. Define the Faculty type again (or import from FindFaculty)
+interface Faculty {
+  id: number;
+  name: string;
+  role: string;
+  availability: boolean;
+}
+
+// 2. Define props for the component
+interface HodAvailabilityProps {
+  allFaculty: Faculty[];
+}
+
+export const HodAvailability: React.FC<HodAvailabilityProps> = ({ allFaculty }) => {
+  // 3. Filter the received prop
+  const hods = allFaculty.filter(faculty => faculty.role === 'HOD');
+
+  if (hods.length === 0) {
+    return (
+       <div className="hod-list-container glass-panel">
+         <p className="text-gray-400 text-sm text-center p-4">No HODs found.</p>
+       </div>
+    );
+  }
 
   return (
     <div className="hod-list-container glass-panel">

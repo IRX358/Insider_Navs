@@ -1,18 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SearchableDropdown } from './SearchableDropdown';
 import { FacultyCard } from './FacultyCard';
-import { HodAvailability } from './HodAvailability'; // Import the new component
-import { mockFaculty } from '../data/mockData';
+import { HodAvailability } from './HodAvailability';
 import { ChevronDown } from 'lucide-react';
+
+// 1. Define the Faculty type from our API 
+interface Faculty {
+  id: number;
+  name: string;
+  department: string;
+  school: string;
+  designation: string;
+  role: string;
+  courses_taken: string[];
+  cabin_number: string;
+  phone_number: string;
+  availability: boolean;
+  location_id: string; 
+}
 
 export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) => {
   const [selectedFaculty, setSelectedFaculty] = useState('');
   const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [selectedDesignation, setSelectedDesignation] = useState<string | null>(null);
-  const [isHodListVisible, setIsHodListVisible] = useState(false); // State for collapsible tab
+  const [isHodListVisible, setIsHodListVisible] = useState(false);
 
-  const facultyOptions = mockFaculty.map(faculty => ({
+  // 2. Add state for faculty data
+  const [allFaculty, setAllFaculty] = useState<Faculty[]>([]);
+  const [isLoadingFaculty, setIsLoadingFaculty] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/faculty')
+      .then(res => res.json())
+      .then((data: Faculty[]) => {
+        setAllFaculty(data);
+        setIsLoadingFaculty(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch faculty:", err);
+        setIsLoadingFaculty(false);
+      });
+  }, []);
+
+  const facultyOptions = allFaculty.map(faculty => ({
     id: faculty.id.toString(),
     label: faculty.name,
     subtitle: `${faculty.department} • ${faculty.designation}`,
@@ -27,8 +58,7 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
       { id: 'SOE', label: 'SOE', subtitle: 'School of Engineering', type: 'faculty' as const},
       { id: 'SOIST', label: 'SOIST', subtitle: 'School of Information Science and Technology', type: 'faculty' as const},
   ];
-
-  const roleOptions = [
+   const roleOptions = [
       { id: '', label: 'All Roles', subtitle: '', type: 'faculty' as const},
       { id: 'CC', label: 'CC', subtitle: '', type: 'faculty' as const},
       { id: 'HOD', label: 'HOD', subtitle: '', type: 'faculty' as const},
@@ -45,12 +75,13 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
     { id: 'Lecturer', label: 'Lecturer', subtitle: '', type: 'faculty' as const},
   ];
 
-  const selectedFacultyData = mockFaculty.find(
+
+  const selectedFacultyData = allFaculty.find(
     faculty => faculty.id.toString() === selectedFaculty
   );
   
   const filteredFaculty = (selectedSchool !== null || selectedRole !== null || selectedDesignation !== null) 
-    ? mockFaculty.filter(faculty => {
+    ? allFaculty.filter(faculty => {
         const schoolMatch = selectedSchool ? faculty.school === selectedSchool : true;
         const roleMatch = selectedRole ? faculty.role === selectedRole : true;
         const designationMatch = selectedDesignation ? faculty.designation === selectedDesignation : true;
@@ -75,7 +106,7 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
             setSelectedRole(null);
             setSelectedDesignation(null);
         }}
-        placeholder="Type faculty name..."
+        placeholder={isLoadingFaculty ? "Loading faculty..." : "Type faculty name..."}
       />
       
     {/* HOD Availability Button and Collapsible Section */}
@@ -93,7 +124,8 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
       <div
         className={`transition-all duration-500 ease-in-out overflow-hidden ${isHodListVisible ? 'max-h-96' : 'max-h-0'}`}
       >
-        <HodAvailability />
+        {/* 5. Pass fetched data to HodAvailability */}
+        <HodAvailability allFaculty={allFaculty} />
       </div>
     </div>
       
@@ -108,7 +140,6 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
             }}
             placeholder="Filter by school..."
         />
-
         <div className="flex gap-4">
             <div className="w-1/2">
                 <SearchableDropdown
@@ -137,8 +168,12 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
         </div>
       </div>
       
-
-      {selectedFacultyData ? (
+      {/* 6. Update card rendering logic */}
+      {isLoadingFaculty ? (
+        <div className="glass-panel rounded-2xl p-6 text-center text-gray-400">
+          Loading faculty data...
+        </div>
+      ) : selectedFacultyData ? (
         <FacultyCard
             faculty={selectedFacultyData}
             onRouteToFaculty={() => onRouteToFaculty(
