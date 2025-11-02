@@ -25,4 +25,3 @@ dist-ssr
 .env
 virt_bk
 __pycache__
-security.py
