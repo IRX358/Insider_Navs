@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { SearchableDropdown } from './SearchableDropdown';
 import { RouteSteps } from './RouteSteps';
-import { Navigation, MapPin } from 'lucide-react';
-import { mockRoute } from '../data/mockData'; 
+import { Navigation, MapPin, AlertCircle } from 'lucide-react';
+// Importing the new specific routes AND the generic route generator
+import { 
+  deansOfficeRoute, 
+  prayerHallRoute, 
+  internationalOfficeRoute,
+  getGenericRoute 
+} from '../data/mockData'; 
 
 interface Location {
   id: string;
@@ -26,12 +32,11 @@ export const FindRoute: React.FC<FindRouteProps> = ({
   const [toLocation, setToLocation] = useState('');
   const [routeResult, setRouteResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [routeError, setRouteError] = useState<string | null>(null); 
 
-  // 2. Add state for locations
   const [locations, setLocations] = useState<Location[]>([]);
   const [isLoadingLocations, setIsLoadingLocations] = useState(true);
 
-  // 3. Fetch locations on component mount
   useEffect(() => {
     fetch('http://localhost:8000/api/locations')
       .then(res => res.json())
@@ -48,13 +53,50 @@ export const FindRoute: React.FC<FindRouteProps> = ({
 
   const handleGetRoute = async () => {
     if (!fromLocation || !toLocation) return;
+    
+    setRouteResult(null);
+    setRouteError(null);
+
     if (fromLocation === toLocation) {
-      alert('Please select different locations for "From" and "To"');
+      setRouteError('Please select different locations for "From" and "To"');
       return;
     }
+    
     setIsLoading(true);
+    
     setTimeout(() => {
-      setRouteResult(mockRoute);
+      let foundRoute = null;
+
+      if (fromLocation === '101') { 
+        if (toLocation === '100') { 
+          foundRoute = deansOfficeRoute;
+        } else if (toLocation === '504') { 
+          foundRoute = prayerHallRoute;
+        } else if (toLocation === '004') { 
+          foundRoute = internationalOfficeRoute;
+        }
+      }
+      
+      // --- ADD GENERIC FALLBACK ---
+      if (!foundRoute) {
+        const fromObj = locations.find(loc => loc.id === fromLocation);
+        const toObj = locations.find(loc => loc.id === toLocation);
+        
+        if (fromObj && toObj) {
+          foundRoute = getGenericRoute(
+            { id: fromObj.id, label: fromObj.label },
+            { id: toObj.id, label: toObj.label }
+          );
+        }
+      }
+      // --- END GENERIC FALLBACK ---
+
+      if (foundRoute) {
+        setRouteResult(foundRoute);
+      } else {
+        setRouteError("Sorry, could not generate a route for this selection.");
+      }
+      
       setIsLoading(false);
     }, 1000);
   };
@@ -64,7 +106,20 @@ export const FindRoute: React.FC<FindRouteProps> = ({
     setFromLocation(toLocation);
     setToLocation(temp);
     setRouteResult(null); 
+    setRouteError(null);
   };
+  
+  const handleFromChange = (value: string) => {
+    setFromLocation(value);
+    setRouteResult(null);
+    setRouteError(null);
+  }
+  
+  const handleToChange = (value: string) => {
+    setToLocation(value);
+    setRouteResult(null);
+    setRouteError(null);
+  }
 
   useEffect(() => {
     if (initialFrom) {
@@ -92,9 +147,9 @@ export const FindRoute: React.FC<FindRouteProps> = ({
       {/* From Location */}
       <SearchableDropdown
         label="From"
-        options={locations} // 4. Use state variable
+        options={locations} 
         value={fromLocation}
-        onChange={(value) => setFromLocation(value)}
+        onChange={handleFromChange} 
         placeholder={isLoadingLocations ? "Loading locations..." : "Select starting location..."}
       />
 
@@ -117,9 +172,9 @@ export const FindRoute: React.FC<FindRouteProps> = ({
       {/* To Location */}
       <SearchableDropdown
         label="To"
-        options={locations} // 5. Use state variable
+        options={locations} 
         value={toLocation}
-        onChange={(value) => setToLocation(value)}
+        onChange={handleToChange}
         placeholder={isLoadingLocations ? "Loading locations..." : "Select destination..."}
       />
 
@@ -143,6 +198,15 @@ export const FindRoute: React.FC<FindRouteProps> = ({
         {isLoading ? 'Finding Route...' : 'Get Route'}
       </button>
 
+      {/* Show Error if one exists */}
+      {routeError && (
+        <div className="flex items-center gap-2 p-3 bg-red-500/20 text-red-400 rounded-xl text-sm">
+          <AlertCircle size={16} />
+          {routeError}
+        </div>
+      )}
+
+      {/* Show result if one exists */}
       {routeResult && (
         <RouteSteps route={routeResult} />
       )}

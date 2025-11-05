@@ -61,7 +61,7 @@ export const AppShell: React.FC = () => {
             <div className="w-12 h-12 flex items-center justify-center rounded-lg neon-border bg-black/50 overflow-hidden">
               <img src={mainLogo} alt="Insider Navs Logo" className="w-full h-full object-cover" />
             </div>
-            <h1 className="text-2xl text-white"><span className='font-bold electrolize-regular'>Insider Navs</span> <p className="text-gray-400 text-sm">Indoor Navigation & Faculty Discovery</p></h1>
+            <h1 className="text-2xl text-white"><span className='font-bold electrolize-regular'>Insider Navs</span> <p className="text-gray-400 text-sm">Campus & Faculty Discovery</p></h1>
           
           </div>
         </div>

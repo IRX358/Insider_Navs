@@ -3,7 +3,8 @@ import {
   User, 
   GraduationCap, 
   MapPin, 
-  Phone, 
+  Phone,
+  Contact, 
   Navigation, 
   CheckCircle, 
   XCircle,
@@ -102,8 +103,8 @@ export const FacultyCard: React.FC<FacultyCardProps> = ({ faculty, onRouteToFacu
         {/* Contact */}
         <div>
           <div className="flex items-center gap-2 text-gray-300 mb-2">
-            <Phone size={16} />
-            <span className="text-sm font-medium">Contact</span>
+            <Contact size={16} />
+            <span className="text-sm font-medium">Contact / Email</span>
           </div>
           <a 
             href={`tel:${faculty.phone_number}`}
