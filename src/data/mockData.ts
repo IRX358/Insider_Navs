@@ -185,7 +185,7 @@ export const getGenericRoute = (
       },
       {
         order: 3,
-        text: 'Look for signs pointing towards ${to.label}.',
+        text: `Look for signs pointing towards ${to.label}.`,
         type: 'turn',
       },
       {
