@@ -39,14 +39,15 @@ interface Faculty {
   id: number;
   name: string;
   department: string;
-  school: string; // Added school
+  school: string;
   designation: string;
   role: string;
   courses_taken: string[];
   cabin_number: string;
   phone_number: string;
   availability: boolean;
-  location_id: string; // location_id is text
+  location_id: string;
+  unavailable_message?: string;  // Custom unavailable message
 }
 
 interface FacultyDashboardProps {
@@ -115,12 +116,13 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
   const [formData, setFormData] = useState({
     name: '',
     department: '',
-    school: '', // Added school
+    school: '',
     designation: '',
     role: '',
     cabin_number: '',
     phone_number: '',
     courses_taken: '',
+    unavailable_message: '',  // Custom unavailable message
   });
 
   // Fetch faculty data on load
@@ -142,12 +144,13 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
         setFormData({
             name: data.name || '',
             department: data.department || '',
-            school: data.school || '', // Add school
+            school: data.school || '',
             designation: data.designation || '',
             role: data.role || '',
             cabin_number: data.cabin_number || '',
             phone_number: data.phone_number || '',
             courses_taken: (data.courses_taken || []).join(', '),
+            unavailable_message: data.unavailable_message || '',
         });
         setIsLoading(false);
       })
@@ -194,12 +197,13 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
     setFormData({
         name: currentFaculty.name || '',
         department: currentFaculty.department || '',
-        school: currentFaculty.school || '', // Include school
+        school: currentFaculty.school || '',
         designation: currentFaculty.designation || '',
         role: currentFaculty.role || '',
         cabin_number: currentFaculty.cabin_number || '',
         phone_number: currentFaculty.phone_number || '',
         courses_taken: (currentFaculty.courses_taken || []).join(', '),
+        unavailable_message: currentFaculty.unavailable_message || '',
     });
     setIsEditing(true);
     setError(null); // Clear errors when starting edit
@@ -224,12 +228,13 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
     const updatePayload = {
         name: formData.name.trim(),
         department: formData.department.trim(),
-        school: formData.school.trim() || null, // Send null if empty string
-        designation: formData.designation.trim() || null, // Send null if empty string
-        role: formData.role.trim() || null, // Send null if empty string
+        school: formData.school.trim() || null,
+        designation: formData.designation.trim() || null,
+        role: formData.role.trim() || null,
         courses_taken: formData.courses_taken.split(',').map(c => c.trim()).filter(c => c),
         cabin_number: formData.cabin_number.trim(),
         phone_number: formData.phone_number.trim(),
+        unavailable_message: formData.unavailable_message.trim() || null,
     };
 
     // Optimistic UI Update
@@ -306,6 +311,49 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
               {isSaving ? ( <div className="spinner-small"></div> ) : ( availability ? <X size={16} /> : <CheckCircle size={16} /> )}
               {isSaving ? 'Saving...' : (availability ? 'Set Unavailable' : 'Set Available')}
             </button>
+         </div>
+         
+         {/* Custom Unavailable Message Input */}
+         <div className="pt-4 border-t border-gray-700">
+           <label className="block text-sm font-medium text-gray-300 mb-2">
+             Custom Unavailable Message (shown when you're unavailable)
+           </label>
+           <div className="flex gap-2">
+             <input
+               type="text"
+               value={formData.unavailable_message}
+               onChange={(e) => setFormData({ ...formData, unavailable_message: e.target.value })}
+               className="flex-1 px-4 py-2 glass-panel rounded-xl border-2 border-transparent focus:neon-border bg-black/30 text-white placeholder-gray-500 transition-all duration-300"
+               placeholder="e.g., In a meeting, back at 3 PM"
+             />
+             <button
+               onClick={async () => {
+                 setIsSaving(true);
+                 try {
+                   const response = await fetch(`http://localhost:8000/api/faculty/${facultyId}`, {
+                     method: 'PUT',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ unavailable_message: formData.unavailable_message.trim() || null }),
+                   });
+                   if (response.ok) {
+                     const updated = await response.json();
+                     setCurrentFaculty(updated);
+                   }
+                 } catch (err) {
+                   console.error('Failed to save message:', err);
+                 } finally {
+                   setIsSaving(false);
+                 }
+               }}
+               disabled={isSaving}
+               className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
+             >
+               Save
+             </button>
+           </div>
+           {currentFaculty?.unavailable_message && (
+             <p className="text-xs text-gray-500 mt-2">Current: "{currentFaculty.unavailable_message}"</p>
+           )}
          </div>
       </div>
 

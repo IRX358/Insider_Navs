@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SearchableDropdown } from './SearchableDropdown';
 import { RouteSteps } from './RouteSteps';
-import { Navigation, MapPin, AlertCircle } from 'lucide-react';
-// Importing the new specific routes AND the generic route generator
-import { 
-  deansOfficeRoute, 
-  prayerHallRoute, 
-  internationalOfficeRoute,
-  getGenericRoute 
-} from '../data/mockData'; 
+import { Navigation, AlertCircle } from 'lucide-react';
 
 interface Location {
   id: string;
@@ -26,7 +19,7 @@ interface FindRouteProps {
 export const FindRoute: React.FC<FindRouteProps> = ({ 
   initialFrom, 
   initialTo, 
-  onLocationChange 
+  onLocationChange
 }) => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
@@ -64,41 +57,38 @@ export const FindRoute: React.FC<FindRouteProps> = ({
     
     setIsLoading(true);
     
-    setTimeout(() => {
-      let foundRoute = null;
-
-      if (fromLocation === '101') { 
-        if (toLocation === '100') { 
-          foundRoute = deansOfficeRoute;
-        } else if (toLocation === '504') { 
-          foundRoute = prayerHallRoute;
-        } else if (toLocation === '004') { 
-          foundRoute = internationalOfficeRoute;
-        }
+    try {
+      const response = await fetch(`http://localhost:8000/api/route/${fromLocation}/${toLocation}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to find route');
       }
+      const data = await response.json();
       
-      // --- ADD GENERIC FALLBACK ---
-      if (!foundRoute) {
-        const fromObj = locations.find(loc => loc.id === fromLocation);
-        const toObj = locations.find(loc => loc.id === toLocation);
-        
-        if (fromObj && toObj) {
-          foundRoute = getGenericRoute(
-            { id: fromObj.id, label: fromObj.label },
-            { id: toObj.id, label: toObj.label }
-          );
-        }
-      }
-      // --- END GENERIC FALLBACK ---
+      // Transform API response to match RouteSteps component expectation
+      // The API returns { total_distance, steps: [{ instruction, distance, to_label }], path }
+      // RouteSteps expects { from, to, totalDistance, steps: [{ instruction, distance, to }] }
+      const fromObj = locations.find(l => l.id === fromLocation);
+      const toObj = locations.find(l => l.id === toLocation);
 
-      if (foundRoute) {
-        setRouteResult(foundRoute);
-      } else {
-        setRouteError("Sorry, could not generate a route for this selection.");
-      }
-      
+      const formattedRoute = {
+        from: fromObj?.label || 'Start',
+        to: toObj?.label || 'Destination',
+        totalDistance: data.total_distance,
+        steps: data.steps.map((s: any) => ({
+          instruction: s.instruction,
+          distance: s.distance,
+          to_label: s.to_label
+        }))
+      };
+
+      setRouteResult(formattedRoute);
+    } catch (err: any) {
+      console.error("Route finding error:", err);
+      setRouteError(err.message || "Sorry, could not generate a route for this selection.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
   
   const handleSwapLocations = () => {

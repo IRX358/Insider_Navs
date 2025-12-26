@@ -6,18 +6,15 @@ import { AdminPanel } from './AdminPanel';
 import { FacultyPanel } from './FacultyPanel';
 import { Dashboard } from './Dashboard';
 import { FlashNewsTicker } from './FlashNewsTicker';
-import { Navigation, MapPin, Settings, Code , User, Mail, Github, Linkedin,X,Bug,Users, LogIn} from 'lucide-react';
+import { Navigation, MapPin, Settings, Code , Mail, Github, Linkedin,X,Bug, LogIn} from 'lucide-react';
 import mainLogo from '../assets/mainLogo.jpg';
 import campusMap from '../assets/cammap.jpg';
 
 export const AppShell: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin' | 'facultyPanel'>('route');
-  // const [activeTab, setActiveTab] = useState<'route' | 'faculty' | 'admin' | 'facultyPanel'>('faculty');  //Default tab selection
   const [fromLocation, setFromLocation] = useState<string | null>(null);
   const [toLocation, setToLocation] = useState<string | null>(null);
-  const [showCampusMap, setShowCampusMap] = useState(false);
-  const [activeBg, setActiveBg] = useState('main-bg');
-
+  const [showStaticMap, setShowStaticMap] = useState(false);
 
   useEffect(() => {
     // Check URL parameters for QR code deep linking
@@ -29,60 +26,53 @@ export const AppShell: React.FC = () => {
   }, []);
 
   return (
-    // <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900">
-    
-      <div className={`flex flex-col min-h-[90rem] bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 ${activeTab === 'admin' ? 'admin-bg' : 'main-bg'}`}>
-      {showCampusMap ? (
-      // When showCampusMap is TRUE, we render the map
-      <div className="flex-grow flex items-center justify-center p-4">
-        <div className="relative glass-panel p-4 rounded-xl shadow-lg max-w-full lg:max-w-4xl">
-          <button onClick={() => setShowCampusMap(false)} className="absolute top-4 right-4 p-2 rounded-full glass-panel text-gray-400 hover:text-white transition-colors z-20">
-            <X size={20} />
-          </button>
-          <img 
-            src={campusMap} 
-            alt="Campus Map" 
-            className="w-full h-auto rounded-lg neon-border" 
-          />
-        </div>
-      </div>
-    ) : (
-      // When showCampusMap is FALSE, we render the main content
-      <div className="container mx-auto px-10 py-10 max-w-md flex-grow">
-        {/* Header */}
-        <div className="text-center mb-8">
-          {/* <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg neon-border bg-black/50">
-              <span className="text-lg font-bold text-purple-400">N</span>
+    <div className={`flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 ${activeTab === 'admin' ? 'admin-bg' : 'main-bg'}`}>
+      {showStaticMap ? (
+        <div className="flex-grow flex flex-col items-center justify-center p-4">
+          <div className="relative glass-panel p-4 rounded-xl shadow-lg w-full max-w-4xl">
+            <div className="flex justify-between items-center mb-4 px-2">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <MapPin className="text-purple-400" /> Campus Map
+              </h2>
+              <button 
+                onClick={() => setShowStaticMap(false)} 
+                className="p-2 rounded-full bg-gray-800 text-gray-400 hover:text-white transition-colors border border-gray-700"
+              >
+                <X size={20} />
+              </button>
             </div>
-            <h1 className="text-2xl font-bold text-white">Insider Navs</h1>
-          </div> */}
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="w-12 h-12 flex items-center justify-center rounded-lg neon-border bg-black/50 overflow-hidden">
-              <img src={mainLogo} alt="Insider Navs Logo" className="w-full h-full object-cover" />
+            <div className="relative w-full rounded-lg overflow-hidden neon-border">
+              <img src={campusMap} alt="Campus Map" className="w-full h-auto object-contain" />
             </div>
-            <h1 className="text-2xl text-white"><span className='font-bold electrolize-regular'>Insider Navs</span> <p className="text-gray-400 text-sm">Campus & Faculty Discovery</p></h1>
-          
           </div>
         </div>
+      ) : (
+        <div className="container mx-auto px-10 py-10 max-w-md flex-grow">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <div className="w-12 h-12 flex items-center justify-center rounded-lg neon-border bg-black/50 overflow-hidden">
+                <img src={mainLogo} alt="Insider Navs Logo" className="w-full h-full object-cover" />
+              </div>
+              <h1 className="text-2xl text-white">
+                <span className='font-bold electrolize-regular'>Insider Navs</span> 
+                <p className="text-gray-400 text-sm">Campus & Faculty Discovery</p>
+              </h1>
+            </div>
+          </div>
 
-        <FlashNewsTicker />
+          <FlashNewsTicker />
 
-        {/* Navigation Tabs */}
-        <div className="mb-8 space-y-4">
+          <div className="mb-8 space-y-4">
             <SegmentedControl
               options={[
                 { value: 'route', label: 'Find Route', icon: Navigation },
                 { value: 'faculty', label: 'Find Faculty', icon: MapPin }
               ]}
-              // Ensure SegmentedControl is disabled when in a Panel view
               value={activeTab === 'admin' || activeTab === 'facultyPanel' ? 'route' : activeTab}
               onChange={(value) => setActiveTab(value as 'route' | 'faculty')}
             />
-          
-          {/* Admin Access Button */}
-          <div className="flex justify-center gap-3"> {/* Added gap-3 for spacing */}
-            {/* NEW Faculty Panel Button */}
+            
+            <div className="flex justify-center gap-3">
               <button
                 onClick={() => setActiveTab(activeTab === 'facultyPanel' ? 'route' : 'facultyPanel')}
                 className={`
@@ -94,10 +84,10 @@ export const AppShell: React.FC = () => {
                   }
                 `}
               >
-                <LogIn size={16} /> {/* Using LogIn icon for access */}
+                <LogIn size={16} />
                 {activeTab === 'facultyPanel' ? 'Exit Faculty' : 'Faculty Panel'}
               </button>
-            <button
+              <button
                 onClick={() => setActiveTab(activeTab === 'admin' ? 'route' : 'admin')}
                 className={`
                   flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
@@ -111,10 +101,9 @@ export const AppShell: React.FC = () => {
                 <Settings size={16} />
                 {activeTab === 'admin' ? 'Exit Admin' : 'Admin Panel'}
               </button>
+            </div>
           </div>
-        </div>
 
-  {/* Tab Content (Conditional Rendering) */}
           <div className="space-y-6">
             {activeTab === 'route' && (
               <>
@@ -130,7 +119,7 @@ export const AppShell: React.FC = () => {
               </>
             )}
             {activeTab === 'faculty' && (
-              <FindFaculty onRouteToFaculty={(locationId, locationName) => {
+              <FindFaculty onRouteToFaculty={(locationId) => {
                 setToLocation(locationId);
                 setActiveTab('route');
               }} />
@@ -144,81 +133,78 @@ export const AppShell: React.FC = () => {
           </div>
         </div>
       )}
-      {/* footer Content */}
+
       <footer className="relative z-10 py-12 px-6 glass-panel rounded-t-2xl border-t border-purple-500/30">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
-            {/* Column 1: App Info */}
-            <div className="text-center md:text-left">
+          <div className="text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start space-x-3 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-500 rounded-lg flex items-center justify-center">
                 <Code className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-lg font-semibold text-white">Insider Navs</span>
+              </div>
+              <span className="text-lg font-semibold text-white">Insider Navs</span>
             </div>
             <p className="text-sm text-gray-400">
-                Your tech-partner to explore Presidency University 📖
+              Your tech-partner to explore Presidency University 📖
             </p>
-            </div>
+          </div>
 
-            {/* Column 2: Quick Links */}
-            <div className="space-y-4 text-center">
+          <div className="space-y-4 text-center">
             <h4 className="text-md font-semibold text-white">Quick Links</h4>
             <ul className="flex justify-center md:justify-start space-x-6 md:space-x-0 md:space-y-2 md:flex-col">
-                <li>
-                <button onClick={() => setShowCampusMap(true)} className="flex items-center justify-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
-                    <Code size={18} />
-                    <span className="hidden md:inline">Campus Map</span>
+              <li>
+                <button onClick={() => setShowStaticMap(true)} className="flex items-center justify-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
+                  <Code size={18} />
+                  <span className="hidden md:inline">Campus Map</span>
                 </button>
-                </li>
-                <li>
+              </li>
+              <li>
                 <a href="#" onClick={() => setActiveTab('faculty')} className="flex items-center justify-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
-                    <MapPin size={18} />
-                    <span className="hidden md:inline">Find Faculty</span>
+                  <MapPin size={18} />
+                  <span className="hidden md:inline">Find Faculty</span>
                 </a>
-                </li>
-                <li>
+              </li>
+              <li>
                 <a href="mailto:insider2navs@gmail.com" className="flex items-center justify-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
-                    <Bug size={18} />
-                    <span className="hidden md:inline">Report Bugs</span>
+                  <Bug size={18} />
+                  <span className="hidden md:inline">Report Bugs</span>
                 </a>
-                </li>
+              </li>
             </ul>
-            </div>
+          </div>
 
-            {/* Column 3: Connect */}
-            <div className="space-y-4 text-center">
+          <div className="space-y-4 text-center">
             <h4 className="text-md font-semibold text-white">Connect</h4>
             <ul className="flex justify-center md:justify-start space-x-6 md:space-x-0 md:space-y-2 md:flex-col">
-                <li>
+              <li>
                 <a href="https://github.com/IRX358" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
-                    <Github size={18} />
-                    <span className="hidden md:inline">GitHub</span>
+                  <Github size={18} />
+                  <span className="hidden md:inline">GitHub</span>
                 </a>
-                </li>
-                <li>
+              </li>
+              <li>
                 <a href="https://www.linkedin.com/in/irfan358" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
-                    <Linkedin size={18} />
-                    <span className="hidden md:inline">LinkedIn</span>
+                  <Linkedin size={18} />
+                  <span className="hidden md:inline">LinkedIn</span>
                 </a>
-                </li>
-                <li>
+              </li>
+              <li>
                 <a href="mailto:insider2navs@gmail.com" className="flex items-center justify-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
-                    <Mail size={18} />
-                    <span className="hidden md:inline">Email Us</span>
+                  <Mail size={18} />
+                  <span className="hidden md:inline">Email Us</span>
                 </a>
-                </li>
+              </li>
             </ul>
-            </div>
+          </div>
         </div>
         <div className="mt-8 pt-8 border-t border-slate-700 text-center text-sm text-gray-500">
-            <p className="mb-2">
+          <p className="mb-2">
             &copy; 2025 Irfan IR || Built with CURIOSITY
-            </p>
-            <p>
+          </p>
+          <p>
             "Building reliable, creative, and future-ready web solutions"
-            </p>
+          </p>
         </div>
-        </footer>
+      </footer>
     </div>
   );
 };

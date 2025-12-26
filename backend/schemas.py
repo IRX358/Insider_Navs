@@ -35,6 +35,13 @@ class FacultyBase(BaseModel):
     phone_number: Optional[str] = None
     availability: bool
     location_id: Optional[str] = None
+    # Timetable fields
+    mon: Optional[str] = '00000000'
+    tue: Optional[str] = '00000000'
+    wed: Optional[str] = '00000000'
+    thu: Optional[str] = '00000000'
+    fri: Optional[str] = '00000000'
+    unavailable_message: Optional[str] = None
 
 class Faculty(FacultyBase):
     id: int
@@ -71,6 +78,7 @@ class FacultyProfileUpdate(BaseModel):
     cabin_number: Optional[str] = None
     phone_number: Optional[str] = None
     courses_taken: Optional[List[str]] = None
+    unavailable_message: Optional[str] = None  # Custom unavailable message
 
 # Schema for CREATING a location 
 class LocationCreate(BaseModel):
@@ -113,3 +121,25 @@ class AnalyticsData(BaseModel):
     unavailable_faculty: int
     available_hods: int
     available_ccs: int
+
+# ---- Pathfinding Schemas ----
+class EdgeBase(BaseModel):
+    from_location_id: str
+    to_location_id: str
+    distance: int
+    direction_text: str
+
+class Edge(EdgeBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+class RouteStep(BaseModel):
+    instruction: str
+    distance: int
+    to_label: str
+
+class RouteResponse(BaseModel):
+    total_distance: int
+    steps: List[RouteStep]
+    path: List[str] # List of location IDs

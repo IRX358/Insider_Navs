@@ -17,7 +17,8 @@
   --border-panel: rgba(255, 255, 255, 0.1);
   --border-focus: var(--accent);
   --focus-shadow: 0 0 10px rgba(139, 60, 255, 0.3);
-  --focus-shadow-hover: 0 0 15px rgba(139, 60, 255, 0.5), 0 0 25px rgba(139, 60, 255, 0.3);
+  --focus-shadow-hover: 0 0 15px rgba(139, 60, 255, 0.5),
+    0 0 25px rgba(139, 60, 255, 0.3);
   --green-bg: #16a34a; /* bg-green-600 */
   --green-bg-hover: #22c55e; /* hover:bg-green-500 */
   --red-bg: #dc2626; /* bg-red-600 */
@@ -32,7 +33,12 @@
   --gray-text-dark: #6b7280; /* text-gray-500 */
   --input-bg: rgba(0, 0, 0, 0.3); /* bg-black/30 */
   --panel-bg: rgba(15, 17, 19, 0.85);
-  --panel-bg-secondary: rgba(15, 17, 19, 0.5); /* Lighter panel for availability */
+  --panel-bg-secondary: rgba(
+    15,
+    17,
+    19,
+    0.5
+  ); /* Lighter panel for availability */
 }
 
 * {
@@ -114,19 +120,30 @@ body {
 }
 
 @keyframes pulse-neon {
-  0%, 100% { box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent), 0 0 15px var(--accent); }
-  50% { box-shadow: 0 0 8px var(--accent), 0 0 15px var(--accent), 0 0 25px var(--accent); }
+  0%,
+  100% {
+    box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent),
+      0 0 15px var(--accent);
+  }
+  50% {
+    box-shadow: 0 0 8px var(--accent), 0 0 15px var(--accent),
+      0 0 25px var(--accent);
+  }
 }
 .animate-pulse-neon {
   animation: pulse-neon 2s ease-in-out infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .animate-spin {
-    animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 /* --- Forms (Inputs & Selects) --- */
@@ -214,12 +231,21 @@ body {
 }
 
 .btn-add {
-  padding: 0.5rem 1rem; 
+  padding: 0.5rem 1rem;
   color: var(--text);
   border: 2px solid var(--border-focus);
   box-shadow: var(--focus-shadow);
   background-image: linear-gradient(to right, var(--accent2), var(--accent));
-  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; white-space: nowrap; cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+  cursor: pointer;
 }
 .btn-add:hover {
   box-shadow: var(--focus-shadow-hover);
@@ -240,28 +266,52 @@ body {
   color: var(--red-text-light); /* Red for delete */
 }
 
-.btn-toggle { /* For Faculty Dashboard large toggle */
-  padding: 0.5rem 1rem; 
+.btn-toggle {
+  /* For Faculty Dashboard large toggle */
+  padding: 0.5rem 1rem;
   border: 1px solid var(--border-panel);
   color: var(--text);
-  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; white-space: nowrap; cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+  cursor: pointer;
 }
-.btn-red { background-color: var(--red-bg); }
-.btn-red:hover { background-color: var(--red-bg-hover); }
-.btn-green { background-color: var(--green-bg); }
-.btn-green:hover { background-color: var(--green-bg-hover); }
+.btn-red {
+  background-color: var(--red-bg);
+}
+.btn-red:hover {
+  background-color: var(--red-bg-hover);
+}
+.btn-green {
+  background-color: var(--green-bg);
+}
+.btn-green:hover {
+  background-color: var(--green-bg-hover);
+}
 
-.btn-toggle-small { /* For Admin Faculty Manager list toggle */
+.btn-toggle-small {
+  /* For Admin Faculty Manager list toggle */
   padding: 0.5rem; /* p-2 */
   border: 1px solid var(--border-panel);
   font-size: 0.75rem; /* text-xs */
   border-radius: 0.5rem; /* rounded-lg */
 }
 /* Colors for btn-toggle-small are applied inline/via className based on state */
-.btn-toggle-small.text-red-400:hover { color: var(--red-text-lighter); }
-.btn-toggle-small.text-green-400:hover { color: #4ade80; }
+.btn-toggle-small.text-red-400:hover {
+  color: var(--red-text-lighter);
+}
+.btn-toggle-small.text-green-400:hover {
+  color: #4ade80;
+}
 
-.btn-edit { /* FacultyDashboard Edit Profile */
+.btn-edit {
+  /* FacultyDashboard Edit Profile */
   padding: 0.5rem 0.75rem; /* px-3 py-2 */
   background-color: var(--accent);
   color: var(--text);
@@ -270,7 +320,8 @@ body {
   background-color: var(--accent2);
 }
 
-.btn-logout { /* Specific logout button */
+.btn-logout {
+  /* Specific logout button */
   padding: 0.5rem 1rem; /* px-4 py-2 */
   background: var(--panel-bg);
   border: 1px solid var(--border-panel);
@@ -281,33 +332,44 @@ body {
   border-color: var(--red-border-light); /* hover:border-red-500/30 */
 }
 button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* --- Spinners --- */
-.spinner { /* Larger spinner */
-  width: 1.5rem; height: 1.5rem;
+.spinner {
+  /* Larger spinner */
+  width: 1.5rem;
+  height: 1.5rem;
   border: 2px solid rgba(139, 60, 255, 0.3);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-.spinner-small { /* Smaller spinner for buttons */
-  width: 1rem; height: 1rem;
+.spinner-small {
+  /* Smaller spinner for buttons */
+  width: 1rem;
+  height: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: var(--text);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-.loading-container { /* Centering wrapper for spinner */
-  display: flex; align-items: center; justify-content: center;
-  gap: 0.75rem; padding: 1.5rem; color: var(--gray-text-medium);
+.loading-container {
+  /* Centering wrapper for spinner */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  color: var(--gray-text-medium);
 }
 
 /* --- Error States --- */
 .error-banner {
-  display: flex; align-items: center; gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.75rem;
   background-color: var(--red-bg-light); /* bg-red-500/20 */
   color: var(--red-text-light); /* text-red-400 */
@@ -315,19 +377,26 @@ button:disabled {
   font-size: 0.875rem; /* text-sm */
   margin-top: 1rem; /* Add some space when it appears */
 }
-.error-container { /* For major loading errors */
-  display: flex; align-items: center; gap: 0.75rem;
+.error-container {
+  /* For major loading errors */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   padding: 1.5rem;
   background-color: var(--red-bg-lighter); /* bg-red-500/10 */
   border: 1px solid var(--red-border-light); /* border-red-500/30 */
   border-radius: 1rem;
   color: var(--red-text-lighter); /* text-red-300 */
 }
-.logout-button-error { /* Specific logout button in error container */
-  margin-left: auto; padding: 0.5rem 1rem; border-radius: 0.5rem;
+.logout-button-error {
+  /* Specific logout button in error container */
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   background-color: var(--red-bg-light);
   color: var(--red-text-lighter);
-  border: 1px solid transparent; transition: all 0.2s;
+  border: 1px solid transparent;
+  transition: all 0.2s;
 }
 .logout-button-error:hover {
   background-color: rgba(239, 68, 68, 0.4);
@@ -337,58 +406,103 @@ button:disabled {
 /* --- Component Specific Styles --- */
 /* Faculty Dashboard */
 .section-title {
-  display: flex; align-items: center; gap: 0.5rem;
-  font-size: 1.125rem; font-weight: 600; color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
   border-bottom: 1px solid var(--border-light);
   padding-bottom: 0.75rem;
 }
 .section-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   border-bottom: 1px solid var(--border-light);
-  padding-bottom: 0.75rem; margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 .availability-display {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background-color: var(--panel-bg-secondary);
-  padding: 1rem; border-radius: 0.75rem; border: 1px solid transparent;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
 }
 .status-text {
-  font-size: 1.125rem; font-weight: 500;
+  font-size: 1.125rem;
+  font-weight: 500;
 }
 /* Faculty Manager List Item */
 .faculty-icon {
-  width: 3rem; height: 3rem;
+  width: 3rem;
+  height: 3rem;
   background-image: linear-gradient(to right, var(--accent2), var(--accent));
-  border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--focus-shadow); flex-shrink: 0;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--focus-shadow);
+  flex-shrink: 0;
 }
 .faculty-name {
-  font-size: 1.125rem; font-weight: 600; color: var(--text);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .faculty-details {
-  font-size: 0.875rem; color: var(--gray-text-medium);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 0.875rem;
+  color: var(--gray-text-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .faculty-actions {
-  display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 .faculty-extra-details {
-  font-size: 0.875rem; color: var(--gray-text-medium);
-  padding-top: 1rem; border-top: 1px solid rgba(55, 65, 81, 0.5); /* border-gray-700/50 */
+  font-size: 0.875rem;
+  color: var(--gray-text-medium);
+  padding-top: 1rem;
+  border-top: 1px solid rgba(55, 65, 81, 0.5); /* border-gray-700/50 */
   margin-top: 1rem;
 }
-.faculty-extra-details p { margin-bottom: 0.25rem; }
-.faculty-extra-details span { color: var(--gray-text-light); }
+.faculty-extra-details p {
+  margin-bottom: 0.25rem;
+}
+.faculty-extra-details span {
+  color: var(--gray-text-light);
+}
 
-.dropdown-overlay { 
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 40; background: transparent;
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  background: transparent;
 }
 
 /* --- Responsive Adjustments --- */
 @media (max-width: 640px) {
-  .glass-panel { margin: 0 4px; }
-  .neon-border { box-shadow: 0 0 5px rgba(139, 60, 255, 0.3); }
-  .neon-border:hover, .neon-border:focus { box-shadow: 0 0 8px rgba(139, 60, 255, 0.5); }
+  .glass-panel {
+    margin: 0 4px;
+  }
+  .neon-border {
+    box-shadow: 0 0 5px rgba(139, 60, 255, 0.3);
+  }
+  .neon-border:hover,
+  .neon-border:focus {
+    box-shadow: 0 0 8px rgba(139, 60, 255, 0.5);
+  }
 }

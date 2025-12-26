@@ -2,17 +2,16 @@ import React from 'react';
 import { Navigation, Clock, MapPin, ArrowRight, Stars as Stairs, Calculator as Elevator } from 'lucide-react';
 
 interface RouteStep {
-  order: number;
-  text: string;
+  instruction: string;
+  distance: number;
+  to_label: string;
   type?: 'walk' | 'stairs' | 'elevator' | 'turn';
-  floor?: number;
 }
 
 interface RouteResult {
-  from: { id: number; name: string; floor: number };
-  to: { id: number; name: string; floor: number };
-  distance_m: number;
-  estimated_time_min: number;
+  from: string;
+  to: string;
+  totalDistance: number;
   steps: RouteStep[];
 }
 
@@ -34,11 +33,8 @@ export const RouteSteps: React.FC<RouteStepsProps> = ({ route }) => {
     }
   };
 
-  const getFloorBadge = (floor: number) => (
-    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-200 ml-2">
-      Floor {floor}
-    </span>
-  );
+  // Estimate time: roughly 1 minute per 80 meters
+  const estimatedTime = Math.max(1, Math.round(route.totalDistance / 80));
 
   return (
     <div className="glass-panel rounded-2xl p-6 space-y-6">
@@ -54,23 +50,21 @@ export const RouteSteps: React.FC<RouteStepsProps> = ({ route }) => {
               <div className="flex items-center gap-2 text-sm">
                 <MapPin size={16} className="text-green-400 flex-shrink-0" />
                 <span className="text-gray-300">From:</span>
-                <span className="text-white font-medium">{route.from.name}</span>
-                {getFloorBadge(route.from.floor)}
+                <span className="text-white font-medium">{route.from}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <MapPin size={16} className="text-red-400 flex-shrink-0" />
                 <span className="text-gray-300">To:</span>
-                <span className="text-white font-medium">{route.to.name}</span>
-                {getFloorBadge(route.to.floor)}
+                <span className="text-white font-medium">{route.to}</span>
               </div>
               <div className="flex items-center gap-4 mt-3 pt-2 border-t border-gray-700">
                 <div className="flex items-center gap-2 text-sm">
                   <Navigation size={16} className="text-blue-400" />
-                  <span className="text-gray-300">{route.distance_m}m</span>
+                  <span className="text-gray-300">{route.totalDistance}m</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Clock size={16} className="text-yellow-400" />
-                  <span className="text-gray-300">{route.estimated_time_min} min</span>
+                  <span className="text-gray-300">{estimatedTime} min</span>
                 </div>
               </div>
             </div>
@@ -84,19 +78,22 @@ export const RouteSteps: React.FC<RouteStepsProps> = ({ route }) => {
         <div className="space-y-3">
           {route.steps.map((step, index) => (
             <div
-              key={step.order}
+              key={index}
               className="flex items-start gap-4 p-3 rounded-xl hover:bg-gray-800/30 transition-colors"
             >
               <div className="flex-shrink-0 w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-sm font-semibold text-white">
-                {step.order}
+                {index + 1}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   {getStepIcon(step)}
-                  {step.floor && getFloorBadge(step.floor)}
+                  <span className="text-xs text-gray-500">{step.distance}m</span>
                 </div>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  {step.text}
+                  {step.instruction}
+                </p>
+                <p className="text-xs text-purple-400 mt-1">
+                  Towards: {step.to_label}
                 </p>
               </div>
             </div>

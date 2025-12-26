@@ -7,6 +7,7 @@ from sqlalchemy import select,update,insert,delete,func
 
 import models, schemas
 from database import get_db, async_engine
+import heapq
 
 app = FastAPI(title="Insider Navs API")
 
@@ -98,7 +99,14 @@ async def faculty_login(login_data: schemas.FacultyUsernameLogin, db: AsyncSessi
         faculty_user = result.scalar_one_or_none()
 
         if not faculty_user:
-            return schemas.LoginResponse(success=False, message="Invalid faculty username")
+            return schemas.LoginResponse(success=False, message="Invalid faculty user ID")
+
+        # Verify the entered user ID against the hashed secure_user_id
+        if not faculty_user.secure_user_id:
+            return schemas.LoginResponse(success=False, message="Account not configured. Contact admin.")
+        
+        if not verify_password(login_data.username.lower().strip(), faculty_user.secure_user_id):
+            return schemas.LoginResponse(success=False, message="Invalid faculty user ID")
 
         return schemas.LoginResponse(success=True, message="Login successful", faculty_id=faculty_user.faculty_id)
 
@@ -434,3 +442,84 @@ async def get_analytics(db: AsyncSession = Depends(get_db)):
     except Exception as e:
         print(f"Error fetching analytics data: {e}")
         raise HTTPException(status_code=500, detail="Internal server error fetching analytics")
+
+# ---- Pathfinding Logic ----
+
+@app.get("/api/route/{from_id}/{to_id}", response_model=schemas.RouteResponse)
+async def get_route(from_id: str, to_id: str, db: AsyncSession = Depends(get_db)):
+    try:
+        # 1. Fetch all edges and locations
+        edges_result = await db.execute(select(models.Edge))
+        edges = edges_result.scalars().all()
+        
+        locs_result = await db.execute(select(models.Location))
+        locations = {loc.id: loc.label for loc in locs_result.scalars().all()}
+
+        if from_id not in locations or to_id not in locations:
+            raise HTTPException(status_code=404, detail="Start or end location not found")
+
+        # 2. Build adjacency list
+        graph = {}
+        for edge in edges:
+            if edge.from_location_id not in graph:
+                graph[edge.from_location_id] = []
+            graph[edge.from_location_id].append({
+                "to": edge.to_location_id,
+                "distance": edge.distance,
+                "instruction": edge.direction_text
+            })
+
+        # 3. Dijkstra's Algorithm
+        distances = {loc_id: float('inf') for loc_id in locations}
+        distances[from_id] = 0
+        pq = [(0, from_id)]
+        previous_nodes = {} # To reconstruct path
+        edge_info = {} # To store instructions
+
+        while pq:
+            current_distance, current_node = heapq.heappop(pq)
+
+            if current_distance > distances[current_node]:
+                continue
+            
+            if current_node == to_id:
+                break
+
+            for neighbor in graph.get(current_node, []):
+                distance = current_distance + neighbor["distance"]
+                if distance < distances[neighbor["to"]]:
+                    distances[neighbor["to"]] = distance
+                    previous_nodes[neighbor["to"]] = current_node
+                    edge_info[(current_node, neighbor["to"])] = neighbor
+                    heapq.heappush(pq, (distance, neighbor["to"]))
+
+        if distances[to_id] == float('inf'):
+            raise HTTPException(status_code=404, detail="No route found between these locations")
+
+        # 4. Reconstruct Path and Steps
+        path = []
+        steps = []
+        curr = to_id
+        while curr in previous_nodes:
+            prev = previous_nodes[curr]
+            info = edge_info[(prev, curr)]
+            steps.insert(0, schemas.RouteStep(
+                instruction=info["instruction"],
+                distance=info["distance"],
+                to_label=locations[curr]
+            ))
+            path.insert(0, curr)
+            curr = prev
+        path.insert(0, from_id)
+
+        return schemas.RouteResponse(
+            total_distance=int(distances[to_id]),
+            steps=steps,
+            path=path
+        )
+
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        print(f"Error calculating route: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error calculating route")
