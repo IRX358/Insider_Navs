@@ -17,8 +17,8 @@
   --border-panel: rgba(255, 255, 255, 0.1);
   --border-focus: var(--accent);
   --focus-shadow: 0 0 10px rgba(139, 60, 255, 0.3);
-  --focus-shadow-hover: 0 0 15px rgba(139, 60, 255, 0.5),
-    0 0 25px rgba(139, 60, 255, 0.3);
+  --focus-shadow-hover:
+    0 0 15px rgba(139, 60, 255, 0.5), 0 0 25px rgba(139, 60, 255, 0.3);
   --green-bg: #16a34a; /* bg-green-600 */
   --green-bg-hover: #22c55e; /* hover:bg-green-500 */
   --red-bg: #dc2626; /* bg-red-600 */
@@ -48,7 +48,12 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
     sans-serif;
   background-color: var(--bg);
   color: var(--text);
@@ -99,8 +104,10 @@ body {
   background: rgba(17, 24, 39, 0.98);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(139, 60, 255, 0.3);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5),
-    0 10px 10px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(139, 60, 255, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.5),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(139, 60, 255, 0.1);
 }
 
 .neon-border {
@@ -115,18 +122,24 @@ body {
 
 /* --- Animations & Effects --- */
 .neon-glow {
-  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent),
+  box-shadow:
+    0 0 10px var(--accent),
+    0 0 20px var(--accent),
     0 0 30px var(--accent);
 }
 
 @keyframes pulse-neon {
   0%,
   100% {
-    box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent),
+    box-shadow:
+      0 0 5px var(--accent),
+      0 0 10px var(--accent),
       0 0 15px var(--accent);
   }
   50% {
-    box-shadow: 0 0 8px var(--accent), 0 0 15px var(--accent),
+    box-shadow:
+      0 0 8px var(--accent),
+      0 0 15px var(--accent),
       0 0 25px var(--accent);
   }
 }

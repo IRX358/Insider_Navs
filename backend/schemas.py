@@ -143,3 +143,26 @@ class RouteResponse(BaseModel):
     total_distance: int
     steps: List[RouteStep]
     path: List[str] # List of location IDs
+
+# ---- Snapshot & Live Data Schemas ----
+class FacultyLive(BaseModel):
+    """Schema for daily-changing faculty data"""
+    id: int
+    availability: bool
+    unavailable_message: Optional[str] = None
+    
+    class Config:
+        orm_mode = True
+
+class SnapshotVersion(BaseModel):
+    """Schema for snapshot version metadata"""
+    version: str
+    
+class SnapshotGenerationResult(BaseModel):
+    """Schema for snapshot generation result"""
+    success: bool
+    message: str
+    version: Optional[str] = None
+    filename: Optional[str] = None
+    row_count: Optional[int] = None
+    file_size_kb: Optional[float] = None

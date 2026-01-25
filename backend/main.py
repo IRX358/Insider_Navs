@@ -1,13 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from security import verify_password # whcih validates passwords
 from sqlalchemy import select,update,insert,delete,func
+from typing import Optional
 
 import models, schemas
 from database import get_db, async_engine
 import heapq
+import os
 
 app = FastAPI(title="Insider Navs API")
 
@@ -53,6 +56,50 @@ async def get_flash_news(db: AsyncSession = Depends(get_db)):
         return news
     except Exception as e:
         print(e)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# IMPORTANT: This route must come BEFORE /api/faculty/{faculty_id}
+# to avoid FastAPI trying to parse "live" as a faculty_id integer
+@app.get("/api/faculty/live", response_model=list[schemas.FacultyLive])
+async def get_faculty_live(ids: Optional[str] = None, db: AsyncSession = Depends(get_db)):
+    """
+    Get live faculty data (availability, unavailable_message)
+    
+    Args:
+        ids: Optional comma-separated list of faculty IDs to filter
+    """
+    try:
+        stmt = select(
+            models.Faculty.id,
+            models.Faculty.availability,
+            models.Faculty.unavailable_message
+        )
+        
+        # Filter by IDs if provided
+        if ids:
+            try:
+                id_list = [int(id_str.strip()) for id_str in ids.split(',')]
+                stmt = stmt.where(models.Faculty.id.in_(id_list))
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Invalid faculty IDs format")
+        
+        stmt = stmt.order_by(models.Faculty.id)
+        result = await db.execute(stmt)
+        
+        # Convert to list of dicts
+        live_data = []
+        for row in result:
+            live_data.append({
+                'id': row[0],
+                'availability': row[1],
+                'unavailable_message': row[2]
+            })
+        
+        return live_data
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        print(f"Error fetching live faculty data: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
     
 @app.get("/api/faculty/{faculty_id}", response_model=schemas.Faculty)
@@ -523,3 +570,88 @@ async def get_route(from_id: str, to_id: str, db: AsyncSession = Depends(get_db)
     except Exception as e:
         print(f"Error calculating route: {e}")
         raise HTTPException(status_code=500, detail="Internal server error calculating route")
+
+
+# ================================
+# Snapshot & Live Data Endpoints
+# ================================
+
+@app.get("/api/meta/snapshot-version", response_model=schemas.SnapshotVersion)
+async def get_snapshot_version(db: AsyncSession = Depends(get_db)):
+    """Get the current snapshot version for client-side sync"""
+    try:
+        stmt = select(models.SnapshotMeta).where(
+            models.SnapshotMeta.key == 'faculty_static_version'
+        )
+        result = await db.execute(stmt)
+        meta = result.scalar_one_or_none()
+        
+        if meta is None:
+            # Return default version if no snapshot exists yet
+            return schemas.SnapshotVersion(version="none")
+        
+        return schemas.SnapshotVersion(version=meta.value)
+    except Exception as e:
+        print(f"Error fetching snapshot version: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.get("/api/snapshots/{filename}")
+async def serve_snapshot(filename: str):
+    """Serve Parquet snapshot files"""
+    try:
+        # Security: validate filename to prevent directory traversal
+        if '..' in filename or '/' in filename or '\\' in filename:
+            raise HTTPException(status_code=400, detail="Invalid filename")
+        
+        # Only allow .parquet files
+        if not filename.endswith('.parquet'):
+            raise HTTPException(status_code=400, detail="Only Parquet files are allowed")
+        
+        snapshot_dir = os.path.join(os.path.dirname(__file__), "snapshots")
+        filepath = os.path.join(snapshot_dir, filename)
+        
+        if not os.path.exists(filepath):
+            raise HTTPException(status_code=404, detail="Snapshot file not found")
+        
+        return FileResponse(
+            filepath,
+            media_type="application/octet-stream",
+            filename=filename
+        )
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        print(f"Error serving snapshot: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.post("/api/admin/regenerate-snapshot", response_model=schemas.SnapshotGenerationResult)
+async def regenerate_snapshot(db: AsyncSession = Depends(get_db)):
+    """
+    Admin endpoint to trigger snapshot regeneration
+    Note: In production, this should be protected with admin authentication
+    """
+    try:
+        # Import the generator function
+        from snapshot_generator import generate_snapshot
+        
+        # Generate new snapshot
+        result = generate_snapshot()
+        
+        return schemas.SnapshotGenerationResult(
+            success=True,
+            message="Snapshot generated successfully",
+            version=result['version'],
+            filename=result['filename'],
+            row_count=result['row_count'],
+            file_size_kb=result['file_size_kb']
+        )
+    except Exception as e:
+        print(f"Error regenerating snapshot: {e}")
+        import traceback
+        traceback.print_exc()
+        return schemas.SnapshotGenerationResult(
+            success=False,
+            message=f"Failed to generate snapshot: {str(e)}"
+        )

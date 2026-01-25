@@ -60,3 +60,9 @@ class Edge(Base):
     to_location_id = Column(Text, ForeignKey("locations.id"), nullable=False)
     distance = Column(Integer, nullable=False)
     direction_text = Column(Text, nullable=False)
+
+class SnapshotMeta(Base):
+    __tablename__ = "snapshot_meta"
+    
+    key = Column(Text, primary_key=True)
+    value = Column(Text, nullable=False)

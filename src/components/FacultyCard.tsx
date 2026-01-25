@@ -9,29 +9,11 @@ import {
   XCircle,
   Briefcase,
   Award,
-  Star
+  Star,
+  Clock
 } from 'lucide-react';
 import { isFavorite, toggleFavorite } from '../utils/favorites';
-
-interface Faculty {
-  id: number;
-  name: string;
-  department: string;
-  designation: string;
-  role: string;
-  courses_taken: string[];
-  cabin_number: string;
-  phone_number: string;
-  availability: boolean;
-  location_id: string; // Standardized to string
-  // Timetable fields
-  mon?: string;
-  tue?: string;
-  wed?: string;
-  thu?: string;
-  fri?: string;
-  unavailable_message?: string;
-}
+import { Faculty } from '../services/faculty.service';
 
 // Helper to get today's timetable and free periods
 const getTodayTimetable = (faculty: Faculty): string => {
@@ -219,13 +201,21 @@ export const FacultyCard: React.FC<FacultyCardProps> = ({ faculty, onRouteToFacu
                 </div>
               )}
 
-              {/* Info Box - Unavailable Message */}
+              {/* Next Free Period & Unavailable Message */}
               {!faculty.availability && (
-                <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30">
-                  <p className="text-yellow-300 text-sm">
-                    {faculty.unavailable_message || 
-                      (nextFree ? `In class, free at period ${nextFree}` : 'Unavailable for the day')}
-                  </p>
+                <div className="space-y-3">
+                  {nextFree && (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-500/10 border border-blue-500/30 w-fit">
+                      <Clock size={14} className="text-blue-400" />
+                      <span className="text-blue-300 text-xs font-bold uppercase tracking-wider">Next Free: Period {nextFree}</span>
+                    </div>
+                  )}
+                  
+                  <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30">
+                    <p className="text-yellow-300 text-sm italic">
+                      {faculty.unavailable_message || 'Currently in class'}
+                    </p>
+                  </div>
                 </div>
               )}
             </>

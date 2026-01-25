@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { LogOut, User, CheckCircle, XCircle, Edit, Save, Phone, MapPin, GraduationCap, X, AlertCircle } from 'lucide-react';
-
+import { LogOut, CheckCircle, Edit, Save, X, AlertCircle } from 'lucide-react';
+import { FacultyService } from '../services/faculty.service';
 // --- Define Dropdown Options ---
 const SCHOOL_OPTIONS = [
   { value: '', label: '-- Select School --' },
@@ -34,21 +34,7 @@ const DESIGNATION_OPTIONS = [
 ];
 // ---
 
-// Interface matching DB/schemas
-interface Faculty {
-  id: number;
-  name: string;
-  department: string;
-  school: string;
-  designation: string;
-  role: string;
-  courses_taken: string[];
-  cabin_number: string;
-  phone_number: string;
-  availability: boolean;
-  location_id: string;
-  unavailable_message?: string;  // Custom unavailable message
-}
+import { Faculty } from '../services/faculty.service';
 
 interface FacultyDashboardProps {
   facultyId: number;
@@ -181,6 +167,8 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
         throw new Error(updatedFacultyData.detail || 'Failed to update availability');
       }
       setCurrentFaculty(updatedFacultyData); // Confirm with server data
+      // Trigger refresh in FacultyService if it's initialized
+      FacultyService.refreshLiveData().catch((err: any) => console.error('Failed to sync FacultyService:', err));
     } catch (err: any) {
       console.error('Failed to toggle availability:', err);
       setError(err.message || 'Could not save availability status.');
@@ -256,6 +244,8 @@ export const FacultyDashboard: React.FC<FacultyDashboardProps> = ({
             throw new Error(updatedFacultyData.detail || 'Failed to update profile');
         }
         setCurrentFaculty(updatedFacultyData); // Confirm with server data
+        // Trigger refresh in FacultyService if it's initialized
+        FacultyService.refreshLiveData().catch((err: any) => console.error('Failed to sync FacultyService:', err));
     } catch (err: any) {
         console.error('Failed to save profile:', err);
         setError(err.message || 'Could not save profile changes.');

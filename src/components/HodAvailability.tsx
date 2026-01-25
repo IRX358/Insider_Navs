@@ -1,13 +1,6 @@
 import React from 'react';
 import './HodAvailability.css';
-
-// 1. Define the Faculty type again (or import from FindFaculty)
-interface Faculty {
-  id: number;
-  name: string;
-  role: string;
-  availability: boolean;
-}
+import { Faculty } from '../services/faculty.service';
 
 // 2. Define props for the component
 interface HodAvailabilityProps {

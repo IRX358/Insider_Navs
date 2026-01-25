@@ -47,7 +47,7 @@ export const AppShell: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="container mx-auto px-10 py-10 max-w-md flex-grow">
+        <div className="container mx-auto px-6 py-10 max-w-md flex-grow">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-2">
               <div className="w-12 h-12 flex items-center justify-center rounded-lg neon-border bg-black/50 overflow-hidden">

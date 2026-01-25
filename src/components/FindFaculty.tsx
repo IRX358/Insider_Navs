@@ -4,24 +4,10 @@ import { FacultyCard } from './FacultyCard';
 import { HodAvailability } from './HodAvailability';
 import { ChevronDown, Star } from 'lucide-react';
 import { getFavorites } from '../utils/favorites';
+import { FacultyService, Faculty } from '../services/faculty.service';
 
 interface FindFacultyProps {
   onRouteToFaculty: (locationId: string, locationName: string) => void;
-}
-
-// Define the Faculty type from our API 
-interface Faculty {
-  id: number;
-  name: string;
-  department: string;
-  school: string;
-  designation: string;
-  role: string;
-  courses_taken: string[];
-  cabin_number: string;
-  phone_number: string;
-  availability: boolean;
-  location_id: string; 
 }
 
 export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) => {
@@ -35,18 +21,33 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
   // State for faculty data
   const [allFaculty, setAllFaculty] = useState<Faculty[]>([]);
   const [isLoadingFaculty, setIsLoadingFaculty] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState('Initializing...');
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/faculty')
-      .then(res => res.json())
-      .then((data: Faculty[]) => {
-        setAllFaculty(data);
+    const loadFaculty = async () => {
+      try {
+        setLoadingMessage('Initializing DuckDB...');
+        await FacultyService.initialize();
+        
+        setLoadingMessage('Loading faculty data...');
+        const faculty = await FacultyService.getAllFaculty();
+        setAllFaculty(faculty);
         setIsLoadingFaculty(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch faculty:", err);
+        
+        // Log mode
+        if (FacultyService.isFallbackMode()) {
+          console.log('⚠️  Running in fallback mode (using traditional API)');
+        } else {
+          console.log('✅ Running with DuckDB optimization');
+        }
+      } catch (err) {
+        console.error("Failed to load faculty:", err);
+        setLoadingMessage('Failed to load faculty data');
         setIsLoadingFaculty(false);
-      });
+      }
+    };
+    
+    loadFaculty();
   }, []);
 
   // Refresh favorites when favorites-only mode is toggled
@@ -105,10 +106,23 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
         label="Search Faculty by Name"
         options={facultyOptions}
         value={selectedFaculty}
-        onChange={(value) => {
+        onChange={async (value) => {
           setSelectedFaculty(value);
           setSelectedSchool(null);
           setSelectedRole(null);
+          
+          if (value) {
+            try {
+              // Fetch absolute latest data for the selected faculty (Priority 1)
+              const latest = await FacultyService.getFacultyById(Number(value));
+              if (latest) {
+                // Update the faculty in our local list to refresh the view
+                setAllFaculty(prev => prev.map(f => f.id === latest.id ? latest : f));
+              }
+            } catch (err) {
+              console.warn('Failed to fetch latest profile for selected faculty:', err);
+            }
+          }
         }}
         placeholder={isLoadingFaculty ? "Loading faculty..." : "Type faculty name..."}
       />
@@ -182,14 +196,14 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
       {/* Card rendering logic */}
       {isLoadingFaculty ? (
         <div className="glass-panel rounded-2xl p-6 text-center text-gray-400">
-          Loading faculty data...
+          {loadingMessage}
         </div>
       ) : selectedFacultyData ? (
         <FacultyCard
           faculty={selectedFacultyData}
           onRouteToFaculty={() => onRouteToFaculty(
-            selectedFacultyData.location_id.toString(),
-            selectedFacultyData.cabin_number
+            selectedFacultyData.location_id?.toString() || '',
+            selectedFacultyData.cabin_number || 'N/A'
           )}
         />
       ) : (
@@ -198,8 +212,8 @@ export const FindFaculty: React.FC<FindFacultyProps> = ({ onRouteToFaculty }) =>
             key={faculty.id}
             faculty={faculty}
             onRouteToFaculty={() => onRouteToFaculty(
-              faculty.location_id.toString(),
-              faculty.cabin_number
+              faculty.location_id?.toString() || '',
+              faculty.cabin_number || 'N/A'
             )}
           />
         ))
